@@ -4,7 +4,7 @@ tags:
 - tools
 ---
 
-## Sublime Text 常用快捷键
+# Sublime Text 常用快捷键
 
 ##### 1、通用
 ```
