@@ -30,11 +30,23 @@ git status
 git commit -m "git init"
 ```
 
-##### 提交到远程仓库
+
+
+##### PUSH远程仓库
+```
+git remote add origin git@github.com:dbanote/08_dbanote.git
+git push -u origin master
 ```
 
+##### 克隆远程仓库
 ```
+git clone git@github.com:dbanote/08_dbanote.git
+```
+
+
 …or create a new repository on the command line
+
+修改测试
 
 echo "# hexo" >> README.md
 git init
