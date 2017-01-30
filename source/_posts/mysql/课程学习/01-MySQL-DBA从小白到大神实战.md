@@ -17,6 +17,8 @@ MVCC是Multiversion Concurrency Control的缩写，中文的意思是多版本�
 目前多数DB都采用了这一技术，比如Oracle，PostgreSQL等，但各自的实现机制不尽相同，MVCC没有一个统一的实现标准。  
 MVCC能有效降低锁的开销，虽然不同数据库实现MVCC的机制有所有同，但大都实现了非阻塞的读操作，写操作也只锁定必要的行。
 
+<!--more-->
+
 ## 2. ACID中的I是怎么实现在的？
 - A: 原子性 Atomicity
 - C: 一致性 Consistency

@@ -6,10 +6,12 @@ tags:
 
 # GIT常用命令整理
 
-##### 基本信息设置
+##### 基本信息设置与查看
 ```
 git config --global user.name 'dbanote'
 git config --global user.email '15004618839@139.com'
+
+git config --list
 ```
 
 ##### 初始化git仓库

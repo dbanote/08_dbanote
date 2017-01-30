@@ -2,6 +2,7 @@
 title: Sublime Text 常用快捷键
 tags:
 - tools
+- sublime text
 ---
 
 # Sublime Text 常用快捷键
@@ -13,6 +14,8 @@ Alt                 调出菜单
 Ctrl + Shift + P    调出命令板（Command Palette）
 Ctrl + `            调出控制台
 ```
+
+<!--more-->
 
 ##### 2、编辑
 ```

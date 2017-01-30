@@ -14,6 +14,8 @@ MySQL线程池只在MariaDB，Oracle MySQL企业版中提供，Oracle MySQL社�
 
 在传统方式下，MySQL线程调度方式有两种：每个连接一个线程(one-thread-per-connection)和所有连接一个线程（no-threads）。在实际生产中，一般用的是前者。即每当有一个客户端连接到MySQL服务器，MySQL服务器都会为该客户端创建一个单独的线程，请求结束后，销毁线程。连接数越多，则相应的线程会越多。这种方式在高并发情况下，会导致线程的频繁创建和释放。
 
+<!-- more -->
+
 ## 2. 为什么用double write就能解决page坏的问题？
 InnoDB 的Page Size一般是16KB，其数据校验也是针对这16KB来计算的，将数据写入到磁盘是以Page为单位进行操作的，mysql的page size跟系统文件的page size是不一致的，在写数据的时候, 系统并不是把整个buffer pool page一次性写到disk上，在极端情况下（比如断电）往往并不能保证这一操作的原子性，16K的数据，写入4K时，发生了系统断电/OS crash ，只有一部分写是成功的，这种情况下就是partial page write问题。
 
