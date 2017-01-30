@@ -30,8 +30,6 @@ git status
 git commit -m "git init"
 ```
 
-
-
 ##### PUSH远程仓库
 ```
 git remote add origin git@github.com:dbanote/08_dbanote.git
@@ -43,20 +41,3 @@ git push -u origin master
 git clone git@github.com:dbanote/08_dbanote.git
 ```
 
-
-…or create a new repository on the command line
-
-修改测试
-
-echo "# hexo" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git remote add origin https://github.com/dbanote/hexo.git
-git push -u origin master
-…or push an existing repository from the command line
-
-git remote add origin https://github.com/dbanote/hexo.git
-git push -u origin master
-…or import code from another repository
-You can initialize this repository with code from a Subversion, Mercurial, or TFS project.
