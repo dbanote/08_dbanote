@@ -115,7 +115,7 @@ mysqld_safe --defaults-file=/u01/my3306/my.cnf &
 
 12.安装MySQL Utilities
 (1)选择MySQL Utilities适合的版本下载：https://dev.mysql.com/downloads/utilities/
-![mysql_utilities_download_00](/img/mysql_utilities_download_00.png)
+![mysql_utilities_download_00](/img/mysql_utilities_download_00.jpg)
 (2)选择Connector/Python适合的版本下载（依赖包）：https://dev.mysql.com/downloads/connector/python/
 ![mysql_utilities_download_01](/img/mysql_utilities_download_01.png)
 (3)上传安装包到服务器/tmp目录，并安装（root用户下）
