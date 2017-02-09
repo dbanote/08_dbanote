@@ -4,26 +4,19 @@ tags:
 - mysql
 ---
 
-# 第二课 MySQL标准化、自动化部署
-
-## 作业题目
-1. 为什么数据目录和日志目录需要分开?
-2. 如何标准化配置多实例?（例如：一台物理主机上部署3306与3307两个实例）
-3. 详细描述MySQL编译安装的过程（截图安装步骤）
-
-## 1. 为什么数据目录和日志目录需要分开?
+## 为什么数据目录和日志目录需要分开?
 这里的分开，我理解是将MySQL的数据目录和日志目录分别放到不同类型的磁盘中。  
 假设生产环境中服务器上有两种类型的磁盘，分别是SSD和SAS，SSD比SAS的响应时间要快（SSD响应时间约0.1毫秒，SAS的响应时间约10毫秒），为了更好的利用磁盘，一般会把活跃的数据放到SSD上，冷数据放到SAS磁盘上。  
 数据目录下的数据一般是随机读写的热数据，放到SSD盘中会有较高的响应速度；  
 日志目录下的日志是顺序读写的冷数据，放到SAS盘中满足写日志高吞吐量的需求。
 <!--more-->
-## 2. 如何标准化配置多实例?
+
+## 如何标准化配置多实例?（例如：一台物理主机上部署3306与3307两个实例）
 标准化配置多实例，主要是标准化每个实例的目录和内存设置，这样每个实例的参数设置也很容易达到标准化。标准化配置的MYSQL实例，方便实施监控及运维管理。  
 因一个MySQL实例最多占用64G的物理内存，所以在物理内存较高的服务器上，一般会安装多个MySQL实例，MySQL不同实例是通过端口来区别的。  
-
 例如：一台64G的物理主机上部署3306与3307两个MYSQL实例  
 
-###### 标准化目录：
+### 标准化目录
 ```
 实例1：
 /data/my3306
@@ -37,7 +30,7 @@ tags:
 # /log  目录挂载到SAS盘上
 ```
 
-###### 标准化内存：
+### 标准化内存
 ```
 实例1：
 15G: InnoDB buffer cache
@@ -51,15 +44,15 @@ OS:
 24G
 ```
 
-###### 标准化参数：
+### 标准化参数
 结合标准化的目录及内存设置，设置标准化的参数
 
-## 3. 详细描述MySQL编译安装的过程
+## 详细描述MySQL编译安装的过程（截图安装步骤）
 
-###### 关闭防火墙和SELINUX
-```
+### 关闭防火墙和SELINUX
+``` perl
 service iptables status
-------------------------------------------------
+#------------------------------------------------
 Table: filter
 Chain INPUT (policy ACCEPT)
 num  target     prot opt source               destination         
@@ -75,41 +68,41 @@ num  target     prot opt source               destination
 
 Chain OUTPUT (policy ACCEPT)
 num  target     prot opt source               destination         
-------------------------------------------------
+#------------------------------------------------
 
 service iptables stop
-------------------------------------------------
+#------------------------------------------------
 iptables: Setting chains to policy ACCEPT: filter          [  OK  ]
 iptables: Flushing firewall rules:                         [  OK  ]
 iptables: Unloading modules:                               [  OK  ]
-------------------------------------------------
+#------------------------------------------------
 
 service iptables status
-------------------------------------------------
+#------------------------------------------------
 iptables: Firewall is not running.
-------------------------------------------------
+#------------------------------------------------
 
 chkconfig iptables off
 
 vi /etc/selinux/config
-------------------------------------------------
+#------------------------------------------------
 SELINUX=disabled
-------------------------------------------------
+#------------------------------------------------
 ```
 
-###### 配置sysctl.conf
-```
+### 配置sysctl.conf
+``` perl
 # 查看服务器内存
 free
-------------------------------------------------
+#------------------------------------------------
              total       used       free     shared    buffers     cached
 Mem:       8174352     616628    7557724        172     151904     253892
 -/+ buffers/cache:     210832    7963520
 Swap:     16531452          0   16531452
-------------------------------------------------
+#------------------------------------------------
 
 vi /etc/sysctl.conf
-------------------------------------------------
+#------------------------------------------------
 # 修改
 kernel.shmmax = 4398046511104
 
@@ -124,7 +117,7 @@ net.core.wmem_default = 262144
 net.core.wmem_max = 1048576
 fs.aio-max-nr = 1048576
 net.ipv4.ip_local_port_range = 9000 65500
-------------------------------------------------
+#------------------------------------------------
 # kernel.shmmax算法：修改为物理内容的50%、60%
 # 8G:kernel.shmmax = (8G*1024*1024*1024*1024)*50% = 4398046511104
 
@@ -132,19 +125,19 @@ net.ipv4.ip_local_port_range = 9000 65500
 sysctl -p
 ```
 
-###### 检查是否已安装MySQL
-```
+### 检查是否已安装MySQL
+``` perl
 rpm -qa | grep mysql
-------------------------------------------------
+#------------------------------------------------
 mysql-libs-5.1.73-7.el6.x86_64
-------------------------------------------------
+#------------------------------------------------
 
 # 删除mysql-libs-5.1.73-7.el6.x86_64包
 rpm -e --nodeps mysql-libs-5.1.73-7.el6.x86_64
 ```
 
-###### 下载MySQL源码
-```
+### 下载MySQL源码
+``` perl
 Download MySQL Community Server  https://dev.mysql.com/downloads/mysql/5.6.html#downloads
 Select Version: 5.6.35 -> Select Platform: Source Code
 -> 选择【Generic Linux (Architecture Independent), Compressed TAR Archive】下载 
@@ -159,12 +152,12 @@ umount /media/cdrom
 
 cp /etc/yum.repos.d/public-yum-ol6.repo /etc/yum.repos.d/public-yum-ol6.repo.bak
 vi /etc/yum.repos.d/public-yum-ol6.repo
-------------------------------------------------
+#------------------------------------------------
 name=Oracle Linux $releasever Latest ($basearch)
 baseurl=file:///media/disk/Server
 gpgcheck=0
 enabled=1
-------------------------------------------------
+#------------------------------------------------
 
 yum -y install lrzsz
 
@@ -183,8 +176,8 @@ ll /u01/mysql*
 -rw-r--r--. 1 root root 32167628 Jan 17 11:16 /u01/mysql-5.6.35.tar.gz
 ```
 
-###### 添加MySQL用户和组
-```
+### 添加MySQL用户和组
+``` perl
 groupadd -g 501 mysql
 useradd -u 501 mysql -g mysql
 echo "mysql123" | passwd --stdin mysql
@@ -193,16 +186,16 @@ id mysql
 uid=501(mysql) gid=501(mysql) groups=501(mysql)
 ```
 
-###### 配MySQL环境变量
-```
+### 配MySQL环境变量
+``` perl
 vi /home/mysql/.bash_profile
-------------------------------------------------
+#------------------------------------------------
 PATH=$PATH:$HOME/bin:/u01/my3306/bin
-------------------------------------------------
+#------------------------------------------------
 ```
 
-###### 创建目录及授权
-```
+### 创建目录及授权
+``` perl
 mkdir -p /u01/my3306/data
 mkdir -p /u01/my3306/log/iblog
 mkdir -p /u01/my3306/log/binlog
@@ -213,19 +206,19 @@ chown -R mysql:mysql /u01/my3306
 chmod -R 755 /u01/my3306
 ```
 
-###### 解压mysql5.6
+### 解压mysql5.6
 ```
 cd /u01
 tar xvpf mysql-5.6.35.tar.gz
 ```
 
-###### 安装cmake及相关依赖包
+### 安装cmake及相关依赖包
 ```
 yum install -y  cmake gcc gcc-c++ ncurses-devel bison zlib libxml openssl 
 ```
 
-###### 编译并安装
-```
+### 编译并安装
+``` perl
 cd /u01/mysql-5.6.35
 
 cmake \
@@ -249,30 +242,30 @@ cmake \
 -DSYSCONFDIR=/etc \
 -DWITH_READLINE=on
 
-第一次CMAKE出现错误提示
----------------------------------------------------------------------------------------------
+# 第一次CMAKE出现错误提示
+#---------------------------------------------------------------------------------------------
 CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
 Please set them or make sure they are set and tested correctly in the CMake files:
 OPENSSL_INCLUDE_DIR
    used as include directory in directory /u01/mysql-5.6.35/CMakeFiles/CMakeTmp
----------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
 
-安装openssl-devel包
+#安装openssl-devel包
 yum -y install openssl-devel
 
-重新cmake需要删除当前目录下CMakeCache.txt，然后再重新执行
+#重新cmake需要删除当前目录下CMakeCache.txt，然后再重新执行
 rm -rf CMakeCache.txt
 
-编译并安装
+#编译并安装
 make
 make install
 ```
 
-###### MySQL参数配置
-```
+### MySQL参数配置
+``` perl
 cd /u01/my3306
 vi my.
-----------------------------------------------------------
+#----------------------------------------------------------
 [client]
 port=3306
 socket=/u01/my3306/mysql.sock
@@ -362,13 +355,13 @@ innodb_write_io_threads=10
 
 [mysqld_safe]
 datadir=/u01/my3306/data
-----------------------------------------------------------
+#----------------------------------------------------------
 
 # 编译后重新修改目录权限
 chown -R mysql:mysql /u01/my3306
 ```
 
-###### 初始化MySQL脚本
+### 初始化MySQL脚本
 ```
 su - mysql
 cd /u01/my3306/scripts
@@ -376,15 +369,15 @@ cd /u01/my3306/scripts
 --datadir=/u01/my3306/data --basedir=/u01/my3306 --user=mysql
 ```
 
-###### 启动MySQL
+### 启动MySQL
 ```
 /u01/my3306/bin/mysqld_safe --defaults-file=/u01/my3306/my.cnf --user=mysql &
 ```
 
-###### 登录MySQL
-```
+### 登录MySQL
+``` perl
 mysql
-或者
+# 或者
 mysql -h127.0.0.1 -uroot
 
 Welcome to the MySQL monitor.  Commands end with ; or \g.

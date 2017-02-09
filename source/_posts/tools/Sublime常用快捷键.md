@@ -5,9 +5,7 @@ tags:
 - sublime text
 ---
 
-# Sublime Text 常用快捷键
-
-##### 1、通用
+## 通用
 ```
 ↑ ↓ ← →             上下左右移动光标
 Alt                 调出菜单
@@ -17,7 +15,7 @@ Ctrl + `            调出控制台
 
 <!--more-->
 
-##### 2、编辑
+## 编辑
 ```
 Ctrl + Enter            在当前行下面新增一行然后跳至该行
 Ctrl + Shift + Enter    在当前行上面增加一行并跳至该行
@@ -27,7 +25,7 @@ Ctrl + ↑/↓              移动当前显示区域
 Ctrl + Shift + ↑/↓      移动当前行
 ```
 
-##### 3、选择
+## 选择
 ```
 Ctrl + D                选择当前光标所在的词并高亮该词所有出现的位置
                         再次 Ctrl + D 选择该词出现的下一个位置，在多重选词的过程中
@@ -40,7 +38,7 @@ Ctrl + Shift + J        快速选择同缩进的内容
 Ctrl + Shift + Space    快速选择当前作用域（Scope）的内容
 ```
 
-##### 4、查找&替换
+## 查找&替换
 ```
 F3                  跳至当前关键字下一个位置
 Shift + F3          跳到当前关键字上一个位置
@@ -54,7 +52,7 @@ Ctrl + Alt + Enter  替换所有关键字匹配
 Ctrl + Shift + F    多文件搜索&替换
 ```
 
-##### 5、跳转
+## 跳转
 ```
 Ctrl + P        跳转到指定文件，输入文件名后可以：
 @ 符号跳转       输入@symbol跳转到symbol符号所在的位置
@@ -64,7 +62,7 @@ Ctrl + R        跳转到指定符号
 Ctrl + G        跳转到指定行号
 ```
 
-##### 6、窗口
+## 窗口
 ```
 Ctrl + Shift + N    创建一个新窗口
 Ctrl + N            在当前窗口创建一个新标签
@@ -72,7 +70,7 @@ Ctrl + W            关闭当前标签，当窗口内没有标签时会关闭该
 Ctrl + Shift + T    恢复刚刚关闭的标签
 ```
 
-##### 7、屏幕
+## 屏幕
 ```
 F11                             切换至普通全屏
 Shift + F11                     切换至无干扰全屏
@@ -85,7 +83,7 @@ Alt+Shift+9       Rows:3        切换至横向三栏分屏
 Alt+Shift+5       Grid          切换至四格式分屏
 ```
 
-##### 8、插件"DeleteBlankLines"
+## 插件"DeleteBlankLines"
 ```
 # Windows/Linux
 Ctrl+Alt+Backspace          删除所有空行
@@ -96,7 +94,7 @@ Ctrl+Alt+Delete             删除所有空行
 Ctrl+Alt+Shift+Delete       删除多余空行
 ```
 
-##### 9、插件"SublimeTmpl"
+## 插件"SublimeTmpl"
 ```
 ctrl+alt+h          html
 ctrl+alt+j          javascript

@@ -7,7 +7,7 @@ title: 一个DBA的工作学习笔记
 subtitle: 欲事之无繁，则必劳于始而逸于终
 description: 
 author: 刘雅君
-language:
+language: zh-Hans
 timezone:
 
 # URL
@@ -64,8 +64,8 @@ pagination_dir: page
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 # theme: landscape
-theme: yilia
-# theme: Tinnypp
+# theme: yilia
+theme: yelee
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -93,3 +93,6 @@ jsonContent:
       excerpt: false
       categories: false
       tags: true
+
+toc:
+  maxdepth: 4

@@ -7,15 +7,15 @@ menu:
 
 # SubNav
 subnav:
-  github: "#"
-  weibo: "#"
+  github: "https://github.com/dbanote"
+  weibo: "http://weibo.com/foxbei"
   #rss: "#"
   #zhihu: "#"
-  #qq: "9320802"
+  qq: "http://sighttp.qq.com/msgrd?v=1&uin=9320802"
   #weixin: "#"
   #jianshu: "#"
   #douban: "#"
-  mail: "mailto:9320802@qq.com"
+  mail: "mailto:15004618839@139.com"
   #facebook: "#"
   #google: "#"
   #twitter: "#"
@@ -48,18 +48,26 @@ open_in_new: false
 # 请在需要打赏的文章的md文件头部，设置属性reward: true
 
 # 打赏基础设定：0-关闭打赏； 1-文章对应的md文件里有reward:true属性，才有打赏； 2-所有文章均有打赏
-reward_type: 0
+reward_type: 2
 # 打赏wording
-reward_wording: '谢谢你请我吃糖果'
+reward_wording: '喜欢的话，支付1元请我吃糖吧！'
+
 # 支付宝二维码图片地址，跟你设置头像的方式一样。比如：/assets/img/alipay.jpg
-alipay: 
+# 支付宝收款1元二维码图片
+alipay: /img/zhifubao01.png
+# 支付宝收款无金额设置二维码图片
+# alipay: /img/zhifubao.png
+
 # 微信二维码图片地址
-weixin: 
+# 微信收款1元二维码图片
+weixin: /img/weixin01.png
+# 微信收款无金额设置二维码图片
+# alipay: /img/weixin.png
 
 # Miscellaneous
-baidu_analytics: ''
+baidu_analytics: '2e7a5de312dd959398193e7e92a5cdce'
 google_analytics: ''
-favicon: /favicon.png
+favicon: /img/favicon.png
 
 #你的头像url
 avatar: /img/avatar.jpg
@@ -83,6 +91,7 @@ style:
 slider:
   # 是否默认展开tags板块
   showTags: false
+  
 
 # 智能菜单
 # 如不需要，将该对应项置为false
@@ -91,16 +100,15 @@ slider:
 #  friends: false
 smart_menu:
   innerArchive: '所有文章'
-  friends: false
-# friends: '友链'
+  friends: '常用网站'
   aboutme: '关于我'
 
 friends:
-  友情链接1: http://localhost:4000/
-  友情链接2: http://localhost:4000/
-  友情链接3: http://localhost:4000/
-  友情链接4: http://localhost:4000/
-  友情链接5: http://localhost:4000/
-  友情链接6: http://localhost:4000/
+  My Oracle Support: https://support.oracle.com/
+  Oracle Edelivery: https://edelivery.oracle.com/
+  Oracle Help Center: http://docs.oracle.com/
+  练数成金: http://www.dataguru.cn/
+  三通IT论坛: http://www.santongit.com/
+  一起自学吧: http://www.17zixueba.com/
 
 aboutme: DBA<br><br>工作学习笔记<br>谢谢大家
