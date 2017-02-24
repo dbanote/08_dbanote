@@ -6,7 +6,7 @@ tags:
 
 ## 使用mysqld_mutil start命令启动多实例3306、3307，使用mysqld_multi report命令显示结果。
 
-### 规划多实例目录，重新编译安装mysql
+### 规划多实例目录
 ``` perl
 mkdir -p /u01/mysql             # 程序目录
 mkdir -p /u01/conf              # 配置文件
@@ -23,7 +23,12 @@ mkdir -p /u01/tmp/3307
 
 chown -R mysql:mysql /u01
 chmod -R 755 /u01
+```
 
+<!--more-->
+
+### 重新编译安装mysql
+``` perl
 cd /u01/mysql-5.6.35
 rm -rf CMakeCache.txt
 
