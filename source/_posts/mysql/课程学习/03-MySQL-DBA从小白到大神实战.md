@@ -37,7 +37,7 @@ double write解决了partial page write的问题，它能保证即使double writ
 
 
 - **查看是否开启double write**
-```
+``` sql
 show variables like '%double%';
 +--------------------+-------+
 | Variable_name      | Value |
@@ -63,16 +63,16 @@ binlog是MySQL Server层记录的日志，所有引擎产生的日志都会通�
 6. MySQL数据库与实例的关系是一对一的
 7. MySQL的数据库是物理操作系统文件或其他形式文件类型的集合，实例是由数据库后台进程/线程以及一个共享内存区组成
 8. MySQL 5.6 InnoDB架构中Buffer Pool
-![mysql_innodb_architecture_00](/img/2017/mysql_innodb_architecture_00.jpg)
+![mysql_innodb_architecture_00](http://oligvdnzp.bkt.clouddn.com/mysql_innodb_architecture_00.jpg)
 (1) `index page`: 数据缓存放在index page里，因MySQL数据的存储结构是Btree，所以称index page，page的概念相当于oracle中的buffer，1 page默认大小16k 
 (2) `data dictionary`: 数据字典的缓冲，其文件是存放在iblog目录下的ibdata中，如`/u01/my3306/log/iblog/ibdata1`
-![mysql_innodb_architecture_01](/img/2017/mysql_innodb_architecture_01.png)
+![mysql_innodb_architecture_01](http://oligvdnzp.bkt.clouddn.com/mysql_innodb_architecture_01.png)
 (3) `lock info`: 行锁放在lock info中，当行锁达到一定值的时候，行锁就会升级为表锁
 (4) `undo page`: 缓存UNDO操作，DML操作修改前镜像放到undo page中，其文件也是存放在iblog目录下的ibdata中
 (5) `insert buffer page`: 缓存二级索引（非唯一索引，或称辅助索引）
 (6) `adaptive hash index`: 自适应哈希索引，InnoDB存储引擎会监控对表上索引的查找，如果观察到建立哈希索引可以带来速度的提升，则建立哈希索引，所以称之为自适应（adaptive）的。自适应哈希索引通过缓冲池的B+树构造而来，因此建立的速度很快。而且不需要将整个表都建哈希索引，InnoDB存储引擎会自动根据访问的频率和模式来为某些页建立哈希索引。
 (7) `Buffer Pool`的大小一般设置为物理内存的60%-80%，在MySQL中可以通过以下命令查询：
-```
+``` sql
 mysql> show variables like '%buffer_pool_size%';
 +-------------------------+-----------+
 | Variable_name           | Value     |
@@ -84,7 +84,7 @@ mysql> show variables like '%buffer_pool_size%';
 9. `redo log buffer`: 缓存redo log，通过redo log thead写到redo log文件中存放在iblog目录下的ibdata中，如`/u01/my3306/log/iblog/ib_logfile0`
 10. 查找算法：链表遍历、二分查找、Btree查找、HASH查找
 11. 当数据库关闭时，把热块保存(缓存)到文件，在打开时再从文件加载到内存里，参数和设置方法如下：
-```
+``` perl
 show variables like '%dump%';
 +-------------------------------------+-------+
 | Variable_name                       | Value |
@@ -118,11 +118,11 @@ mysqld_safe --defaults-file=/u01/my3306/my.cnf &
 
 12. 安装MySQL Utilities
  (1)选择MySQL Utilities适合的版本下载：https://dev.mysql.com/downloads/utilities/
-![mysql_utilities_download_00](/img/2017/mysql_utilities_download_00.png)
+![mysql_utilities_download_00](http://oligvdnzp.bkt.clouddn.com/mysql_utilities_download_00.png)
  (2)选择Connector/Python适合的版本下载（依赖包）：https://dev.mysql.com/downloads/connector/python/
-![mysql_utilities_download_01](/img/2017/mysql_utilities_download_01.png)
+![mysql_utilities_download_01](http://oligvdnzp.bkt.clouddn.com/mysql_utilities_download_01.png)
  (3)上传安装包到服务器/tmp目录，并安装（root用户下）
-```
+``` perl
 ll
 total 32836
 -rw-r--r--. 1 root root    258776 Jan 25 11:50 mysql-connector-python-2.1.5-1.el6.x86_64.rpm
@@ -132,24 +132,24 @@ rpm -ivh mysql-connector-python-2.1.5-1.el6.x86_64.rpm
 rpm -ivh mysql-utilities-1.6.4-1.el6.noarch.rpm
 ```
  (4)MySQL Utilities--mysqlfrm
-```
+``` perl
 # 以诊断模式查看表结构定义文件
 mysqlfrm --diagnostic user.frm
 ```
 
 13. 查看错误日志所在位置
-```
+``` perl
 mysql> show variables like '%log_error%';
 +---------------------+---------------------------+
 | Variable_name       | Value                     |
 +---------------------+---------------------------+
 | binlog_error_action | IGNORE_ERROR              |
-| log_error           | /u01/my3306/log/error.log |  //错误日志所在位置
+| log_error           | /u01/my3306/log/error.log |  # 错误日志所在位置
 +---------------------+---------------------------+
 ```
 
 14. 开启慢查询
-```
+``` perl
 mysql> show variables like '%slow%';
 +---------------------------+--------------------------+
 | Variable_name             | Value                    |
@@ -157,15 +157,15 @@ mysql> show variables like '%slow%';
 | log_slow_admin_statements | ON                       |
 | log_slow_slave_statements | OFF                      |
 | slow_launch_time          | 2                        |
-| slow_query_log            | ON                       |   //开启慢查询
-| slow_query_log_file       | /u01/my3306/log/slow.log |   //慢查询日志位置
+| slow_query_log            | ON                       |   # 开启慢查询
+| slow_query_log_file       | /u01/my3306/log/slow.log |   # 慢查询日志位置
 +---------------------------+--------------------------+ 
 
 mysql> show variables like '%query_time%';
 +-----------------+----------+
 | Variable_name   | Value    |
 +-----------------+----------+
-| long_query_time | 1.000000 |   //慢查询时间为1s
+| long_query_time | 1.000000 |   # 慢查询时间为1s
 +-----------------+----------+
 
 ```
@@ -192,7 +192,7 @@ mysql> show variables like '%max_user_connect%';
 ```
 
 17. 查出mysqld进程号为27507
-```
+``` perl
 ps -ef | grep 3306
 
 root      5475  5183  0 11:44 pts/1    00:00:00 grep 3306
@@ -201,7 +201,7 @@ mysql    27507 26656  0 Jan17 ?        00:01:32 /u01/my3306/bin/mysqld --default
 ```
 
 18. 查看mysqld进程27507下所有线程
-``` 
+``` perl
 pstack 27507
 
 Thread 28 (Thread 0x7f9b070c4700 (LWP 27508)):
@@ -222,7 +222,7 @@ Thread 1 (Thread 0x7f9b18f637e0 (LWP 27507)):
 ```
 
 19. read/write thread
-```
+``` perl
 mysql> show variables like '%io_thread%';
 +-------------------------+-------+
 | Variable_name           | Value |
@@ -233,7 +233,7 @@ mysql> show variables like '%io_thread%';
 ```
 
 20. purge thread: 清undo page
-```
+``` perl
 mysql> show variables like '%purge%';
 +----------------------------+-------+
 | Variable_name              | Value |

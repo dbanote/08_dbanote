@@ -89,7 +89,7 @@ hexo s
 ```
 
 5. 更换后效果
-![update_theme.png](/img/2017/update_theme.png)
+![update_theme.png](http://oligvdnzp.bkt.clouddn.com/update_theme.png)
 
 6. 编辑修改`themes\yilia`目录下的`_config.yml`文件
 ``` perl

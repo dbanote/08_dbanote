@@ -264,7 +264,7 @@ make install
 ### MySQL参数配置
 ``` perl
 cd /u01/my3306
-vi my.
+vi my.cnf
 #----------------------------------------------------------
 [client]
 port=3306

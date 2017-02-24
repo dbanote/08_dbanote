@@ -32,7 +32,7 @@ hexo是一款基于Node.js的静态博客框架。 hexo官网地址：[https://h
 - git: [https://git-scm.com](https://git-scm.com)
 
 安装成功后，可通过以下命令查看安装版本：
-```
+``` bash
 $ node -v
 v6.9.4
 
@@ -42,19 +42,19 @@ git version 2.11.1.windows.1
 
 ### 配置Git Bash样式（可选）
 新建`D:\08_dbanote`目录做为博客根目录，进入目录，右键选择Git Bash Here
-![git-bash-here.jpg](/img/2017/git-bash-here.jpg)
+![git-bash-here.jpg](http://oligvdnzp.bkt.clouddn.com/git-bash-here.jpg)
 
 在弹出的窗口上右键选择Options，设置窗口样式
-![git-bash-01.jpg](/img/2017/git-bash-01.png)
+![git-bash-01.jpg](http://oligvdnzp.bkt.clouddn.com/git-bash-01.png)
 
 设置显示字体
-![git-bash-02.jpg](/img/2017/git-bash-02.jpg)
+![git-bash-02.jpg](http://oligvdnzp.bkt.clouddn.com/git-bash-02.jpg)
 
 设置窗口大小(需重新开启Git Bash方可生效)
-![git-bash-03.jpg](/img/2017/git-bash-03.jpg)
+![git-bash-03.jpg](http://oligvdnzp.bkt.clouddn.com/git-bash-03.jpg)
 
 设置鼠标右健直接粘贴
-![git-bash-04.jpg](/img/2017/git-bash-04.jpg)
+![git-bash-04.jpg](http://oligvdnzp.bkt.clouddn.com/git-bash-04.jpg)
 
 ### 安装淘宝的cnpm源
 访问国外源速度较慢，建议安装淘宝的cnpm源，以后使用`cnpm`命令代替`npm`
@@ -116,7 +116,7 @@ INFO  Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.
 
 ### 本地预览博客
 打开浏览器，输入[http://localhost:4000](http://localhost:4000)
-![hexo_init.png](/img/2017/hexo_init.png)
+![hexo_init.png](http://oligvdnzp.bkt.clouddn.com/hexo_init.png)
 
 
 ### 配置博客网站基本信息
@@ -147,8 +147,8 @@ highlight:
 
 ### 建立和用户名对应的仓库
 建立和用户名相对应的仓库，这是什么意思呢？以我的例子来说，我的用户名是dbanote,那么我的博客仓库就必须是dbanote.github.io。
-![创建新仓库](/img/2017/github_01.png)
-![创建新仓库](/img/2017/github_02.png)
+![创建新仓库](http://oligvdnzp.bkt.clouddn.com/github_01.png)
+![创建新仓库](http://oligvdnzp.bkt.clouddn.com/github_02.png)
 
 ### 配置SSH公钥
 远程代码是基于SSH的，所以需要SSH的相关配置。方法是现在本地生成SSH公钥，然后添加到Github上面。打开`git bash`，具体的操作如下：
