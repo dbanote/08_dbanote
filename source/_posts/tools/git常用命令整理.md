@@ -2,6 +2,7 @@
 title: GIT常用命令整理
 tags:
 - git
+- tools
 ---
 
 ## 基本信息设置与查看

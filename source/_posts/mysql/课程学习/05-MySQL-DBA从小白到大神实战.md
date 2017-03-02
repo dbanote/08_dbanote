@@ -540,7 +540,7 @@ Threads: 2  Questions: 16  Slow queries: 0  Opens: 70  Flush tables: 1  Open tab
 --------------
 ```
 
-### 升级数据库字典（报错）
+### 升级数据库字典
 ``` perl
 mysql_upgrade -S /u01/run/3306/mysql.sock
 --------------
@@ -557,6 +557,86 @@ Checking if update is needed.
 Running queries to upgrade MySQL server.
 mysql_upgrade: [ERROR] 1726: Storage engine 'InnoDB' does not support system tables. [mysql.plugin]
 --------------
+
+# 重启下数据库
+mysqld_multi stop
+mysqld --defaults-file=/u01/conf/my3306.cnf &
+mysql_upgrade -S /u01/run/3306/mysql.sock --skip-version-check
+--------------
+Checking if update is needed.
+Running queries to upgrade MySQL server.
+Checking system database.
+mysql.columns_priv                                 OK
+mysql.db                                           OK
+mysql.engine_cost                                  OK
+mysql.event                                        OK
+mysql.func                                         OK
+mysql.general_log                                  OK
+mysql.gtid_executed                                OK
+mysql.help_category                                OK
+mysql.help_keyword                                 OK
+mysql.help_relation                                OK
+mysql.help_topic                                   OK
+mysql.innodb_index_stats                           OK
+mysql.innodb_table_stats                           OK
+mysql.ndb_binlog_index                             OK
+mysql.plugin                                       OK
+......
+Repairing tables
+mysql_old.innodb_index_stats
+Error    : Unknown error 1146
+status   : Operation failed
+mysql_old.innodb_table_stats
+Error    : Unknown error 1146
+status   : Operation failed
+mysql_old.slave_master_info
+Error    : Unknown error 1146
+status   : Operation failed
+mysql_old.slave_relay_log_info
+Error    : Unknown error 1146
+status   : Operation failed
+mysql_old.slave_worker_info
+Error    : Unknown error 1146
+status   : Operation failed
+Upgrade process completed successfully.
+Checking if update is needed.
+--------------
+```
+
+### 再查看mysql版本信息，升级完成
+``` perl
+mysql -S /u01/run/3306/mysql.sock
+
+mysql> status;
+--------------
+mysql  Ver 14.14 Distrib 5.7.17, for linux-glibc2.5 (x86_64) using  EditLine wrapper
+
+Connection id:          4
+Current database:
+Current user:           root@localhost
+SSL:                    Not in use
+Current pager:          stdout
+Using outfile:          ''
+Using delimiter:        ;
+Server version:         5.7.17-log MySQL Community Server (GPL)
+Protocol version:       10
+Connection:             Localhost via UNIX socket
+Server characterset:    latin1
+Db     characterset:    latin1
+Client characterset:    utf8
+Conn.  characterset:    utf8
+UNIX socket:            /u01/run/3306/mysql.sock
+Uptime:                 6 min 3 sec
+
+Threads: 1  Questions: 3174  Slow queries: 0  Opens: 368  Flush tables: 1  Open tables: 25  Queries per second avg: 8.743
+--------------
+
+mysql> select version();
++------------+
+| version()  |
++------------+
+| 5.7.17-log |
++------------+
 ```
 
 ## 课堂笔记整理
@@ -808,7 +888,3 @@ mysqladmin -S /u01/my3306/run/mysql.sock shutdown &
 
 /u01/mysql/bin/mysql_secure_installation
 ```
-
-
-
-磊
