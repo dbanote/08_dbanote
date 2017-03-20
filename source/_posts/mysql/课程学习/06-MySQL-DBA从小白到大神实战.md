@@ -354,6 +354,28 @@ mysqldump --help
 # 示例
 mysqldump -h127.0.0.1 --single-transaction -P3306 -A > /tmp/all_database.sql
 mysqldump -h127.0.0.1 -P3306 -uroot -p --single-transaction --master-data=2 jfedu > /tmp/jfedu.sql
+
+--single-transaction
+# 创建一致性快照（only innodb）
+# 不能存在其他操作：ALTER TABLE, DROP TABLE, RENAME TABLE,TRUNCATE TABLE
+# 关闭--lock-tables
+
+--master-data
+1 ： 输出change master命令
+2 ： 注释输出change master命令
+
+--default-character-set
+binary
+
+mysqldump -u[USER] -p[PASSWORD] -h [HOST] -P[PORT] --single-transaction --master-data=2 [DB]| pv -q -L 10M | gzip > /tmp/test.gzip
+备份 ：mysqldump
+限流 ：pv 
+压缩 ：gzip
+
+gunzip -fc /tmp/test.gz | mysql -u[USER]-h[HOST] -P[PORT] DB 
+解压 ： gunzip
+恢复 ：mysql
+主备： change master
 ```
 
 ### 分析mysqldump的执行流程
@@ -440,54 +462,27 @@ show variables like '%iso%';
 +---------------+----------------+
 ```
 
-### 查看mydumper帮助
-``` 
+### mydumper常用参数及使用示例
+``` perl
 su - mysql
 mydumper --help
 
-Usage:
-  mydumper [OPTION...] multi-threaded MySQL dumping
+# 常用参数解释
+# 
+statement-size ： sql语句最大长度
+rows ： 按照执行rows分割table数据。
+chunk-filesize ： 按照输出文件的大小分割table数据。
+no-locks ： 不锁表
+binlogs ： 备份binlog日志
+threads ： 并发线程数
 
-Help Options:
-  -?, --help                  Show help options
+mydumper -u [USER] -p [PASSWORD] -h [HOST] -P [PORT] -t [THREADS] -b -c -B [DB] -o /tmp/backup
 
-Application Options:
-  -B, --database              Database to dump
-  -T, --tables-list           Comma delimited table list to dump (does not exclude regex option)
-  -o, --outputdir             Directory to output files to
-  -s, --statement-size        Attempted size of INSERT statement in bytes, default 1000000
-  -r, --rows                  Try to split tables into chunks of this many rows. This option turns off --chunk-filesize
-  -F, --chunk-filesize        Split tables into chunks of this output file size. This value is in MB
-  -c, --compress              Compress output files
-  -e, --build-empty-files     Build dump files even if no data available from table
-  -x, --regex                 Regular expression for 'db.table' matching
-  -i, --ignore-engines        Comma delimited list of storage engines to ignore
-  -m, --no-schemas            Do not dump table schemas with the data
-  -d, --no-data               Do not dump table data
-  -G, --triggers              Dump triggers
-  -E, --events                Dump events
-  -R, --routines              Dump stored procedures and functions
-  -k, --no-locks              Do not execute the temporary shared read lock.  WARNING: This will cause inconsistent backups
-  --less-locking              Minimize locking time on InnoDB tables.
-  -l, --long-query-guard      Set long query timer in seconds, default 60
-  -K, --kill-long-queries     Kill long running queries (instead of aborting)
-  -D, --daemon                Enable daemon mode
-  -I, --snapshot-interval     Interval between each dump snapshot (in minutes), requires --daemon, default 60
-  -L, --logfile               Log file name to use, by default stdout is used
-  --tz-utc                    SET TIME_ZONE='+00:00' at top of dump to allow dumping of TIMESTAMP data when a server has data in different time zones or data is being moved between servers with different time zones, defaults to on use --skip-tz-utc to disable.
-  --skip-tz-utc               
-  --use-savepoints            Use savepoints to reduce metadata locking issues, needs SUPER privilege
-  --success-on-1146           Not increment error count and Warning instead of Critical in case of table doesn't exist
-  --lock-all-tables           Use LOCK TABLE for all, instead of FTWRL
-  -U, --updated-since         Use Update_time to dump only tables updated in the last U days
-  --trx-consistency-only      Transactional consistency only
-  -h, --host                  The host to connect to
-  -u, --user                  Username with privileges to run the dump
-  -p, --password              User password
-  -P, --port                  TCP/IP port to connect to
-  -S, --socket                UNIX domain socket file to use for connection
-  -t, --threads               Number of threads to use, default 4
-  -C, --compress-protocol     Use compression on the MySQL connection
-  -V, --version               Show the program version and exit
-  -v, --verbose               Verbosity of output, 0 = silent, 1 = errors, 2 = warnings, 3 = info, default 2
+myloader
+  queries-per-transaction：每个事务包含的记录数
+  overwrite-tables ：drop table if exists
+  enable-binlog：binlog恢复数据  
+  threads ： 并发线程数
+
+myloader -u [USER] -p [PASSWORD] -h [HOST] -P [PORT] -t [THREADS] -o /tmp/backup - -B [DB]
 ```

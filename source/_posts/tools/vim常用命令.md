@@ -1,5 +1,6 @@
 ---
 title: VIM常用命令
+date: 2017-01-28
 tags:
 - tools
 - vim
