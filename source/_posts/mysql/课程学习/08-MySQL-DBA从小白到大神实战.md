@@ -2,6 +2,7 @@
 title: MySQL DBA从小白到大神实战-08 MySQL监控系统之Zabbix
 tags:
 - mysql
+- zabbix
 ---
 
 ## 部署zabbix监控
