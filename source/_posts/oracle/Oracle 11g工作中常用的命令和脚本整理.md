@@ -86,3 +86,40 @@ select OWNER,count(OBJECT_NAME) OBJECT_NUM from dba_objects where OWNER in
     (select username from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE')) and OBJECT_TYPE='TABLE'
     group by OWNER;
 ```
+
+## 动态性能视图授权普通用户查看权限
+``` sql
+grant select on v_$session to <schema>;
+grant select on v_$locked_object to <schema>;
+```
+
+## 查看并kill掉锁对象
+``` sql
+select * from v$locked_object;
+select object_name,object_type from dba_objects where object_id=&object_id;
+select sid, serial#, machine, program from v$session where sid=&sid;
+
+set line 150
+col OWNER for a20
+col OBJECT_NAME for a20
+select s.SID,s.SERIAL#,lo.PROCESS,lo.LOCKED_MODE,do.OWNER,do.OBJECT_NAME,do.OBJECT_TYPE
+  from v$locked_object lo, dba_objects do, v$session s
+  where lo.OBJECT_ID=do.OBJECT_ID and lo.SESSION_ID=s.SID;
+
+alter system kill session '&sid,&serial';
+
+```
+
+## 生成删除所有普通用户及其数据脚本
+``` sql
+select 'drop user ' || username || ' cascade;' from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE');
+```
+
+## 启动/关闭数据库
+``` sql
+startup
+startup nomount
+startup mount
+startup open read only;
+startup restrict
+```
