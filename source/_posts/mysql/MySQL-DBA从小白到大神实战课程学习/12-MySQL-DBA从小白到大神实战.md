@@ -77,7 +77,7 @@ Var : port[3306] read_only[OFF] version[5.6.35-log]
 ### 在装sysbench机上执行压测命令
 ``` perl
 # prepare准备阶段，构建压测环境
-sysbench /usr/local/Share/Sysbench/tests/include/oltp_legacy/Select.lua \
+sysbench /usr/local/share/sysbench/tests/include/oltp_legacy/select.lua \
 --oltp-table-size=20000 --mysql-table-engine=innodb --db-driver=mysql \
 --mysql-user=root --mysql-password=root123 --mysql-port=3306 \
 --mysql-host=10.245.231.202 --mysql-db=test \
@@ -98,7 +98,7 @@ Creating secondary indexes on 'sbtest20'...
 #--------------------------------------------------------------------------------------------------------------------
 
 # 开始压测
-sysbench /usr/local/Share/Sysbench/tests/include/oltp_legacy/Select.lua \
+sysbench /usr/local/share/sysbench/tests/include/oltp_legacy/select.lua \
 --oltp-table-size=20000 --mysql-table-engine=innodb --db-driver=mysql \
 --mysql-user=root --mysql-password=root123 --mysql-port=3306 \
 --mysql-host=10.245.231.202 --mysql-db=test \
@@ -151,6 +151,7 @@ Threads fairness:
 
 ### 通过orzdba监控工具分析查看机器的容量
 ![](http://oligvdnzp.bkt.clouddn.com/0413_sysbench_01.png)
+附：[orzdba工具使用说明](http://olejf7dok.bkt.clouddn.com/orzdba%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.pdf)
 
 ## 分库分表架构设计
 问题：在订单表中（分库分表），有70%查询是通过主键和userId字段查询(userId是分库分表策略字段)，有20%要通过order_num（订单号）查数据。
@@ -226,13 +227,3 @@ Threads fairness:
 业内解决方案：
 ![业务痛点](http://oligvdnzp.bkt.clouddn.com/0414_fen_database_02.png)
 ![Proxy方案对比](http://oligvdnzp.bkt.clouddn.com/0414_fen_database_03.png)
-
-## 附：orzdba工具使用说明
-{% pdf http://olejf7dok.bkt.clouddn.com/orzdba%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.pdf %}
-
-
-
-
-
-
-

@@ -123,3 +123,47 @@ startup mount
 startup open read only;
 startup restrict
 ```
+
+## 查看创建表等数据库对象时的DDL语句
+``` sql
+desc dbms_metadata
+------------------------------------------------------------------------------------------
+FUNCTION GET_DDL RETURNS CLOB
+ Argument Name                  Type                    In/Out Default?
+ ------------------------------ ----------------------- ------ --------
+ OBJECT_TYPE                    VARCHAR2                IN
+ NAME                           VARCHAR2                IN
+ SCHEMA                         VARCHAR2                IN     DEFAULT
+ VERSION                        VARCHAR2                IN     DEFAULT
+ MODEL                          VARCHAR2                IN     DEFAULT
+ TRANSFORM                      VARCHAR2                IN     DEFAULT
+------------------------------------------------------------------------------------------
+
+set long 9999
+set pagesize 9999
+select dbms_metadata.get_ddl('&OBJECT_TYPE','&NAME','&SCHEMA') from dual;
+
+Enter value for object_type: TABLE
+Enter value for name: YTHYHDZ
+Enter value for schema: BFBHDD9
+```
+
+
+## 实现将SYS用户的操作信息记录到操作系统日志中
+``` perl
+alter system set audit_syslog_level='USER.NOTICE' scope=spfile;
+alter system set audit_sys_operations=TRUE scope=spfile;
+alter system set audit_trail=none scope=spfile;
+# 调整后的参数生效需重启数据库
+
+# 查看系统日志
+tail -100f /var/log/messages
+```
+
+## 查找数据库中无效对象
+``` sql
+col OWNER for a15
+col OBJECT_NAME for a50
+select OWNER,OBJECT_NAME,OBJECT_TYPE,STATUS from dba_objects 
+  where OWNER not in ('SYS','SYSTEM') and STATUS='INVALID';
+```
