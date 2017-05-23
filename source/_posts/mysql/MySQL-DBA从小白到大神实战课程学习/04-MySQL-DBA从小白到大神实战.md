@@ -1,5 +1,6 @@
 ---
 title: MySQL DBA从小白到大神实战-04 揭密MySQL databock and binlog的格式
+date: 2017-03-17
 toc_list_number: false
 tags:
 - mysql

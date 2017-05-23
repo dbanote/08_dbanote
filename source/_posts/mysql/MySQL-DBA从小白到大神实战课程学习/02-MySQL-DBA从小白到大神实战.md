@@ -1,5 +1,6 @@
 ---
 title: MySQL DBA从小白到大神实战-02 MySQL标准化、自动化部署
+date: 2017-02-23
 tags:
 - mysql
 ---

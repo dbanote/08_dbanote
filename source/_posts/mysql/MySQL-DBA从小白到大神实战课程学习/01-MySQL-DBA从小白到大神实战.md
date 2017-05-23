@@ -1,5 +1,6 @@
 ---
 title: MySQL DBA从小白到大神实战-01 MySQL 高级DBA职业规划
+date: 2017-02-09
 tags:
 - mysql
 ---

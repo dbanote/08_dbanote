@@ -1,5 +1,6 @@
 ---
 title: MySQL DBA从小白到大神实战-08 MySQL监控系统之Zabbix
+date: 2017-03-20
 tags:
 - mysql
 - zabbix

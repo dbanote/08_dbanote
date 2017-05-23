@@ -1,5 +1,6 @@
 ---
 title: MySQL DBA从小白到大神实战-05 MySQL DBA日常操作
+date: 2017-02-24
 tags:
 - mysql
 ---
