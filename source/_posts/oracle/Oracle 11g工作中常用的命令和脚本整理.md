@@ -167,3 +167,21 @@ col OBJECT_NAME for a50
 select OWNER,OBJECT_NAME,OBJECT_TYPE,STATUS from dba_objects 
   where OWNER not in ('SYS','SYSTEM') and STATUS='INVALID';
 ```
+
+## 统计数据库中各类用户对象的数量
+``` sql
+select o.owner,o.OBJECT_TYPE,COUNT(*) 
+from dba_objects o, 
+(select username from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE','SYSMAN','DBSNMP')) u
+where u.username=o.owner group by o.owner,o.OBJECT_TYPE order by 1,2;
+```
+
+## 列出数据库中指定类型对象列表
+``` sql
+col object_name for a50
+select owner,object_name,object_type
+from dba_objects o,
+(select username from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE','SYSMAN','DBSNMP')) u
+where o.owner=u.username and object_type in ('TRIGGER','PROCEDURE','JOB')
+order by 1,3,2;
+```
