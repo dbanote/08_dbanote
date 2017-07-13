@@ -1,5 +1,5 @@
 ---
-title: Oracle 12c特性解读-容器数据库和灾备-05 创建与管理CDB和PDB
+title: Oracle 12c特性解读-容器数据库和灾备-05 PDB迁移和克隆
 date: 2017-06-02
 tags:
 - oracle
