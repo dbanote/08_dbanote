@@ -4,6 +4,8 @@ date: 2017-03-20
 tags:
 - mysql
 - zabbix
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 部署zabbix监控
@@ -16,7 +18,7 @@ zabbix由2部分构成，zabbix server与可选组件zabbix agent。zabbix serve
 CentOS6.X和CentOS7.X的安装和使用均有较大变化，为便于今后的学习和工作，下面将CentOS7.3的安装和基本配置也记录到本文中。
 
 ### 安装CentOS7.3
-详见：[CentOS7.3安装图解](https://dbanote.github.io/2017/03/18/linux/20170318_CentOS7.3安装图解/)
+详见：[CentOS7.3安装图解](/2017/03/18/linux/20170318_CentOS7.3安装图解/)
 <!-- more -->
 
 ### CentOS7.X系统的基本配置和使用
@@ -122,7 +124,7 @@ ip a
 
 
 ### 源码编译安装mysql
-参见博文：[MySQL DBA从小白到大神实战-02 MySQL标准化、自动化部署](https://dbanote.github.io/2017/01/26/mysql/课程学习/02-MySQL-DBA从小白到大神实战/#详细描述mysql编译安装的过程截图安装步骤)
+参见博文：[MySQL DBA从小白到大神实战-02 MySQL标准化、自动化部署](/2017/02/23/mysql/MySQL-DBA从小白到大神实战课程学习/02-MySQL-DBA从小白到大神实战/#详细描述MySQL编译安装的过程（截图安装步骤）)
 
 ### 安装和配置zabbix server
 #### 建zabbix用户、组和安装目录

@@ -1,8 +1,10 @@
 ---
 title: MySQL DBA从小白到大神实战-02 MySQL标准化、自动化部署
-date: 2017-02-23
+date: 2017-01-23
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 为什么数据目录和日志目录需要分开?

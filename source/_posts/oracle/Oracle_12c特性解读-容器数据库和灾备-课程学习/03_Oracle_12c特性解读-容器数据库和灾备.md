@@ -4,6 +4,8 @@ date: 2017-05-17
 tags:
 - oracle
 - 12c
+categories:
+- Oracle 12c特性解读-容器数据库和灾备
 ---
 
 ## 手工创建cdb数据库(create database语句)

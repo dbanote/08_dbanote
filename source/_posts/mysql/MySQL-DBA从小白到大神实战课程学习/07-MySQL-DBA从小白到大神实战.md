@@ -3,6 +3,8 @@ title: MySQL DBA从小白到大神实战-07 MySQL锁机制与事务机制实现
 date: 2017-03-10
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## MySQL参数autocommit生产环境设1还是0？为什么？

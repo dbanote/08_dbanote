@@ -3,6 +3,8 @@ title: MySQL DBA从小白到大神实战-06 深入浅出MySQL备份与恢复
 date: 2017-03-06
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 使用mydumper工具全库备份

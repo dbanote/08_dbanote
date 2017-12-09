@@ -4,6 +4,8 @@ date: 2017-04-13
 tags:
 - mysql
 - sysbench
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 用sysbench压测MySQL，通过orzdba监控工具分析机器的容量

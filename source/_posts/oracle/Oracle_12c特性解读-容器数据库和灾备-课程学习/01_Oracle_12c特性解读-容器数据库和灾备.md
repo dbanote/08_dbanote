@@ -4,6 +4,8 @@ date: 2017-05-05
 tags:
 - oracle
 - 12c
+categories:
+- Oracle 12c特性解读-容器数据库和灾备
 ---
 
 ## 安装部署12c

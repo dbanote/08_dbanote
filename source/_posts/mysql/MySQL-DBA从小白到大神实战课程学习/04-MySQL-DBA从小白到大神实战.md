@@ -1,9 +1,11 @@
 ---
 title: MySQL DBA从小白到大神实战-04 揭密MySQL databock and binlog的格式
-date: 2017-03-17
+date: 2017-02-17
 toc_list_number: false
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 1. 为什么创建一个InnoDB表只分配了96K而不是1M？

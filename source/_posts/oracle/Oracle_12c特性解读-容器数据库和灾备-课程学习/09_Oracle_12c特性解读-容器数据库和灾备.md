@@ -4,6 +4,8 @@ date: 2017-07-02
 tags:
 - oracle
 - 12c
+categories:
+- Oracle 12c特性解读-容器数据库和灾备
 ---
 
 ## Snapshot Standby
@@ -295,7 +297,7 @@ CURRENT_SCN
     2615063
 ```
 
-### 跟归档恢复
+### 跳归档恢复
 ``` perl
 # SCN增量备份，同时创建备库控制文件
 rman target /

@@ -3,6 +3,8 @@ title: MySQL DBA从小白到大神实战-13 深入分析Online DDL原理
 date: 2017-04-21
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 用oak对表sbtest1做添加字段和增加索引的Online DDL

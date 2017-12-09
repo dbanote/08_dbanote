@@ -3,6 +3,8 @@ title: MySQL-DBA从小白到大神实战-14 运维MySQL过程中线上故障分�
 date: 2017-04-25
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## MySQL常见故障

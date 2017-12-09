@@ -4,6 +4,8 @@ date: 2017-01-28 13:42
 toc_list_number: false
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 1. thread pool的原理是什么？

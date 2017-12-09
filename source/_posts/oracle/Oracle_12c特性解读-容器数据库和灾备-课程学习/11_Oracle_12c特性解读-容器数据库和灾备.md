@@ -1,147 +1,94 @@
 ---
-title: Oracle 12c特性解读-容器数据库和灾备-11 容灾切换和故障演练实践总结
-date: 2017-07-13
+title: Oracle 12c特性解读-容器数据库和灾备-11 灾备维护经验总结
+date: 2017-07-14
 tags:
 - oracle
 - 12c
+categories:
+- Oracle 12c特性解读-容器数据库和灾备
 ---
 
-## 练习DG Broker switchover和failover的过程
-### 练习switchover
+## 不影响主库，模拟备库Failover，恢复主备数据同步的过程
+### 删除备库dg broker配置
 ``` perl
-# switchover可以在主或备库上运行
-# 使用TNS的方式登陆DG Broker
-$ dgmgrl sys/Center08@dgtp
-DGMGRL for Linux: Release 12.2.0.1.0 - Production on Tue Jul 4 15:01:13 2017
+$ tnsping dgtp
 
-Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
+TNS Ping Utility for Linux: Version 12.2.0.1.0 - Production on 13-JUL-2017 18:31:27
 
-Welcome to DGMGRL, type "help" for information.
-Connected to "DGTP"
-Connected as SYSDBA.
-DGMGRL> show configuration;
+Copyright (c) 1997, 2016, Oracle.  All rights reserved.
 
-Configuration - dgt_dg
+Used parameter files:
+/u01/app/oracle/product/12.2.0/db_1/network/admin/sqlnet.ora
 
-  Protection Mode: MaxPerformance
-  Members:
-  dgtp - Primary database
-    dgts - Physical standby database 
 
-Fast-Start Failover: DISABLED
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 10.240.4.174)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = dgtp)))
+OK (0 msec)
 
-Configuration Status:
-SUCCESS   (status updated 13 seconds ago)
+$ vi $ORACLE_HOME/network/admin/tnsnames.ora
+# 修改端口号为任意没开通的
+DGTP =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 10.240.4.174)(PORT = 15211))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = dgtp)
+    )
+  )
+
+$ tnsping dgtp
+
+TNS Ping Utility for Linux: Version 12.2.0.1.0 - Production on 13-JUL-2017 18:34:37
+
+Copyright (c) 1997, 2016, Oracle.  All rights reserved.
+
+Used parameter files:
+/u01/app/oracle/product/12.2.0/db_1/network/admin/sqlnet.ora
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = 10.240.4.174)(PORT = 15211)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = dgtp)))
+TNS-12541: TNS:no listener
+
+# 关闭dg broker
+SQL> show parameter dg
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+cell_offloadgroup_name               string
+dg_broker_config_file1               string      /u01/app/oracle/product/12.2.0
+                                                 /db_1/dbs/dr1DGTS.dat
+dg_broker_config_file2               string      /u01/app/oracle/product/12.2.0
+                                                 /db_1/dbs/dr2DGTS.dat
+dg_broker_start                      boolean     TRUE
+inmemory_adg_enabled                 boolean     TRUE
+SQL> alter system set dg_broker_start=false;
+
+# 删除DG broker配置文件
+! rm /u01/app/oracle/product/12.2.0/db_1/dbs/dr1DGTS.dat
+! rm /u01/app/oracle/product/12.2.0/db_1/dbs/dr2DGTS.dat
 ```
 
 <!-- more -->
-switchover测试
+
+### 手工failover
 ``` perl
-# switchover到备库dgts
-DGMGRL> switchover to dgts;
-Performing switchover NOW, please wait...
-Operation requires a connection to database "dgts"
-Connecting ...
-Connected to "DGTS"
-Connected as SYSDBA.
-New primary database "dgts" is opening...
-Operation requires start up of instance "dgt" on database "dgtp"
-Starting instance "dgt"...
-ORACLE instance started.
-Database mounted.
-Database opened.
-Connected to "DGTP"
-Switchover succeeded, new primary is "dgts"
-DGMGRL> show configuration;
+# 在备库上记录current_scn
+SQL> select current_scn from v$database;
 
-Configuration - dgt_dg
+CURRENT_SCN
+-----------
+    5651932
 
-  Protection Mode: MaxPerformance
-  Members:
-  dgts - Primary database
-    dgtp - Physical standby database 
+SQL> select open_mode from v$database;
 
-Fast-Start Failover: DISABLED
+OPEN_MODE
+--------------------
+READ ONLY WITH APPLY
 
-Configuration Status:
-SUCCESS   (status updated 71 seconds ago)
-
-# switchover到原主库dgtp
-DGMGRL> switchover to dgtp;
-Performing switchover NOW, please wait...
-Operation requires a connection to database "dgtp"
-Connecting ...
-Connected to "DGTP"
-Connected as SYSDBA.
-New primary database "dgtp" is opening...
-Operation requires start up of instance "dgt" on database "dgts"
-Starting instance "dgt"...
-ORACLE instance started.
-Database mounted.
-Database opened.
-Connected to "DGTS"
-Switchover succeeded, new primary is "dgtp"
-```
-
-### 练习failover
-``` perl
-# 模拟主库宕机
-sqlplus sys/Center08@dgtp as sysdba
-shutdown abort
-
-# 在备库上执行failover，failover只能在备库上运行
-dgmgrl sys/Center08@dgts
-
-DGMGRL> show configuration;
-
-Configuration - dgt_dg
-
-  Protection Mode: MaxPerformance
-  Members:
-  dgtp - Primary database
-    Error: ORA-1034: ORACLE not available
-
-    dgts - Physical standby database 
-
-Fast-Start Failover: DISABLED
-
-Configuration Status:
-ERROR   (status updated 0 seconds ago)
-
-# 成功执行failover
-DGMGRL> failover to dgts;
-Performing failover NOW, please wait...
-Failover succeeded, new primary is "dgts"
-
-# 提示要原主库需要执行reinstated操作，才能变更为物理备库
-DGMGRL> show configuration;
-
-Configuration - dgt_dg
-
-  Protection Mode: MaxPerformance
-  Members:
-  dgts - Primary database
-    dgtp - Physical standby database (disabled)
-      ORA-16661: the standby database needs to be reinstated
-
-Fast-Start Failover: DISABLED
-
-Configuration Status:
-SUCCESS   (status updated 16 seconds ago)
-
-
-# 主库恢复后是无法直接打开
-SQL> startup
-ORACLE instance started.
-
-Total System Global Area 3992977408 bytes
-Fixed Size                  8800136 bytes
-Variable Size            1056966776 bytes
-Database Buffers         2919235584 bytes
-Redo Buffers                7974912 bytes
-Database mounted.
-ORA-16649: possible failover to another database prevents this database from
-being opened
+# 手工failover
+SQL> recover managed standby database finish force;
+Media recovery complete.
 
 SQL> select open_mode from v$database;
 
@@ -149,38 +96,75 @@ OPEN_MODE
 --------------------
 MOUNTED
 
-# 在备库执行reinstate database，将原主库变为备库
-DGMGRL> reinstate database dgtp;
-Reinstating database "dgtp", please wait...
-Reinstatement of database "dgtp" succeeded
+SQL> alter database commit to switchover to primary;
 
-DGMGRL> show configuration;
+Database altered.
 
-Configuration - dgt_dg
+SQL> alter database open;
 
-  Protection Mode: MaxPerformance
-  Members:
-  dgts - Primary database
-    dgtp - Physical standby database 
+SQL> select open_mode, database_role from v$database;
 
-Fast-Start Failover: DISABLED
+OPEN_MODE            DATABASE_ROLE
+-------------------- ----------------
+READ WRITE           PRIMARY
 
-Configuration Status:
-SUCCESS   (status updated 44 seconds ago)
+# 这时备库就可以做读写操作了
+SQL> create table test as select * from all_objects;
+```
 
-# 查看原主库状态
-SQL> select open_mode,database_role from v$database;
+### 恢复主备数据同步
+``` perl
+SQL> alter database close;
+
+Database altered.
+
+SQL> select open_mode, database_role from v$database;
+
+OPEN_MODE            DATABASE_ROLE
+-------------------- ----------------
+MOUNTED              PRIMARY
+
+SQL> flashback database to scn 5651932;
+
+Flashback complete.
+
+SQL> alter database convert to physical standby;
+
+Database altered.
+
+SQL> select open_mode, database_role from v$database;
+
+OPEN_MODE            DATABASE_ROLE
+-------------------- ----------------
+MOUNTED              PHYSICAL STANDBY
+
+SQL> recover managed standby database disconnect from session;
+Media recovery complete.
+
+SQL> alter system set dg_broker_start=true;
+
+$ vi $ORACLE_HOME/network/admin/tnsnames.ora
+# 修改端口号修改成原先的1521
+DGTP =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 10.240.4.174)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = dgtp)
+    )
+  )
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> select open_mode, database_role from v$database;
 
 OPEN_MODE            DATABASE_ROLE
 -------------------- ----------------
 READ ONLY WITH APPLY PHYSICAL STANDBY
 
-
-```
-
-## 练习自动化切换 Fast-Start Failover
-### 配置开启Fast-Start Failover
-``` perl
+# 查看ADG配置已自已应用成功
 DGMGRL> show configuration;
 
 Configuration - dgt_dg
@@ -190,246 +174,110 @@ Configuration - dgt_dg
   dgtp - Primary database
     dgts - Physical standby database 
 
-Fast-Start Failover: DISABLED   #  初始自动化切换是DISABLED
+Fast-Start Failover: DISABLED
 
 Configuration Status:
-SUCCESS   (status updated 18 seconds ago)
-
-# 1. 查看主/备库是否开启闪回数据库
-## 备库开启闪回数据库用以下命令
-recover managed standby database cancel;
-alter database flashback on;
-recover managed standby database disconnect from session;
-
-# 2. LISTENER中要配置GLOBAL_DBNAME=db_unique_name_DGMGRL，如
-   (SID_DESC =
-      (GLOBAL_DBNAME = DGTP_DGMGRL)
-      (ORACLE_HOME = /u01/app/oracle/product/12.2.0/db_1)
-      (SID_NAME = dgt)
-    )
-
-# 3. 在DG BROKER中设置主备库的FastStartFailoverTarget
-DGMGRL> edit database dgtp set property FastStartFailoverTarget='dgts';
-Property "faststartfailovertarget" updated
-
-DGMGRL> edit database dgts set property FastStartFailoverTarget='dgtp';
-Property "faststartfailovertarget" updated
-
-DGMGRL> show database verbose dgtp;
-.....
-LogXptMode                      = 'ASYNC'   # Protection Mode: MaxPerformance
-.....
-FastStartFailoverTarget         = 'dgts'
-.....
-
-# 4. 如果主备的设置为最大高可用保护模式，则需要设置LogXptMode为sync，最大性能保护模式，则需要设置LogXptMode为async
-
-# 满足以上4个条件后，使用以下命令启用Fast-Start Failover
-DGMGRL> enable fast_start failover;
-Enabled.
-
-DGMGRL> start observer;
-[W000 07/04 16:13:04.06] FSFO target standby is dgts
-[W000 07/04 16:13:06.22] Observer trace level is set to USER
-[W000 07/04 16:13:06.22] Try to connect to the primary.
-[W000 07/04 16:13:06.22] Try to connect to the primary dgtp.
-[W000 07/04 16:13:06.23] The standby dgts is ready to be a FSFO target
-[W000 07/04 16:13:08.23] Connection to the primary restored!
-[W000 07/04 16:13:09.23] Disconnecting from database dgtp.
-
-# 不要关闭上面的窗口，重新打开一个
-DGMGRL> show configuration;
-
-Configuration - dgt_dg
-
-  Protection Mode: MaxPerformance
-  Members:
-  dgtp - Primary database
-    dgts - (*) Physical standby database 
-
-Fast-Start Failover: ENABLED    # 状态已经是ENABLED了
-
-Configuration Status:
-SUCCESS   (status updated 10 seconds ago)
-
+SUCCESS   (status updated 58 seconds ago)
 ```
 
-### 模拟Fast-Start Failover
+## 12cR2 SQL/PLUS里新增命令HISTORY
 ``` perl
-# 主库shutdown abort
-shutdown abort
-
-# observer上
-DGMGRL> start observer;
-[W000 07/04 16:13:04.06] FSFO target standby is dgts
-[W000 07/04 16:13:06.22] Observer trace level is set to USER
-[W000 07/04 16:13:06.22] Try to connect to the primary.
-[W000 07/04 16:13:06.22] Try to connect to the primary dgtp.
-[W000 07/04 16:13:06.23] The standby dgts is ready to be a FSFO target
-[W000 07/04 16:13:08.23] Connection to the primary restored!
-[W000 07/04 16:13:09.23] Disconnecting from database dgtp.
-[W000 07/04 16:16:36.48] Primary database cannot be reached.
-[W000 07/04 16:16:36.48] Fast-Start Failover threshold has not exceeded. Retry for the next 30 seconds
-[W000 07/04 16:16:37.48] Try to connect to the primary.
-[W000 07/04 16:16:39.56] Primary database cannot be reached.
-[W000 07/04 16:16:40.56] Try to connect to the primary.
-[W000 07/04 16:17:04.15] Primary database cannot be reached.
-[W000 07/04 16:17:04.15] Fast-Start Failover threshold has not exceeded. Retry for the next 2 seconds
-[W000 07/04 16:17:05.15] Try to connect to the primary.
-[W000 07/04 16:17:07.23] Primary database cannot be reached.
-[W000 07/04 16:17:07.23] Fast-Start Failover threshold has expired.
-[W000 07/04 16:17:07.23] Try to connect to the standby.
-[W000 07/04 16:17:07.23] Making a last connection attempt to primary database before proceeding with Fast-Start Failover.
-[W000 07/04 16:17:07.23] Check if the standby is ready for failover.
-[S002 07/04 16:17:07.23] Fast-Start Failover started...
-
-16:17:07.23  Tuesday, July 04, 2017
-Initiating Fast-Start Failover to database "dgts"...
-[S002 07/04 16:17:07.23] Initiating Fast-start Failover.
-Performing failover NOW, please wait...
-Failover succeeded, new primary is "dgts"
-16:17:18.42  Tuesday, July 04, 2017
-[S002 07/04 16:17:18.42] Fast-Start Failover finished...
-[W000 07/04 16:17:18.42] Failover succeeded. Restart pinging.
-[W000 07/04 16:17:18.43] Primary database has changed to dgts.
-[W000 07/04 16:17:18.49] Try to connect to the primary.
-[W000 07/04 16:17:18.49] Try to connect to the primary dgts.
-[W000 07/04 16:17:19.59] Connection to the primary restored!
-[W000 07/04 16:17:19.60] The standby dgtp needs to be reinstated
-[W000 07/04 16:17:19.60] Try to connect to the new standby dgtp.
-[W000 07/04 16:17:20.60] Disconnecting from database dgts.
-[W000 07/04 16:17:22.60] Connection to the new standby restored!
-[W000 07/04 16:17:22.61] Failed to ping the new standby.
-.....
-
-# 主库恢复后，自动Reinstate
-SQL> startup
-ORACLE instance started.
-
-Total System Global Area 3992977408 bytes
-Fixed Size                  8800136 bytes
-Variable Size            1056966776 bytes
-Database Buffers         2919235584 bytes
-Redo Buffers                7974912 bytes
-Database mounted.
-ORA-16649: possible failover to another database prevents this database from
-being opened
-
-
-DGMGRL> show configuration;
-ORA-16795: the standby database needs to be re-created
-
-Configuration details cannot be determined by DGMGRL
-
-# observer上
-[W000 07/04 17:10:30.30] Try to connect to the primary dgts.
-[W000 07/04 17:10:32.31] Connection to the primary restored!
-[W000 07/04 17:10:33.31] Wait for new primary to be ready to reinstate.
-[W000 07/04 17:10:34.31] New primary is now ready to reinstate.
-[W000 07/04 17:10:34.31] Issuing REINSTATE command.      # 提示开始自动做REINSTATE
-
-17:10:34.31  Tuesday, July 04, 2017
-Initiating reinstatement for database "dgtp"...
-Reinstating database "dgtp", please wait...
-[W000 07/04 17:10:46.45] The standby dgtp is ready to be a FSFO target
-Reinstatement of database "dgtp" succeeded
-17:10:56.69  Tuesday, July 04, 2017
-[W000 07/04 17:10:57.46] Successfully reinstated database dgtp.
-[W000 07/04 17:10:58.46] The reinstatement of standby dgtp was just done
-.....
-
-[oracle@dgtp12 ~]$ sqlplus sys/Center08@dgtp as sysdba
-
-SQL*Plus: Release 12.2.0.1.0 Production on Tue Jul 4 17:14:27 2017
-
-Copyright (c) 1982, 2016, Oracle.  All rights reserved.
-
-
-Connected to:
-Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
-
-SQL> select open_mode,database_role from v$database;
-
-OPEN_MODE            DATABASE_ROLE
--------------------- ----------------
-READ ONLY WITH APPLY PHYSICAL STANDBY
-
-
-[oracle@dgtp12 ~]$ dgmgrl sys/Center08@dgtp
-DGMGRL for Linux: Release 12.2.0.1.0 - Production on Tue Jul 4 17:15:33 2017
-
-Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
-
-Welcome to DGMGRL, type "help" for information.
-Connected to "DGTP"
-Connected as SYSDBA.
-DGMGRL> show configuration;
-
-Configuration - dgt_dg
-
-  Protection Mode: MaxPerformance
-  Members:
-  dgts - Primary database
-    dgtp - (*) Physical standby database 
-
-Fast-Start Failover: ENABLED
-
-Configuration Status:
-SUCCESS   (status updated 42 seconds ago)
+show hist
+set hist off
+set hist on
+set hist 500
+hist
+hist 3 del
+hist 1 run
+hist 1 edit
+hist clear
 ```
 
-## 练习Active Data Guard连接会话保留的特性
+## 主库闪回数据库后备库恢复同步
 ``` perl
-SQL> show parameter standby
+# 主库上执行
+create restore point fb_recover_trunc guarantee flashback database;
 
-NAME                                 TYPE        VALUE
------------------------------------- ----------- ------------------------------
-enabled_PDBs_on_standby              string      *
-standby_archive_dest                 string      ?#/dbs/arch
-standby_db_preserve_states           string      NONE
-standby_file_management              string      AUTO
+col NAME for a20
+col TIME for a35
+set lines 200
+col STORAGE_SIZE for a50
+SELECT NAME, SCN, TIME, DATABASE_INCARNATION# DI,GUARANTEE_FLASHBACK_DATABASE, STORAGE_SIZE/1024/1024/1024 
+  FROM V$RESTORE_POINT WHERE GUARANTEE_FLASHBACK_DATABASE='YES';
 
-# 主备库都执行
-alter system set standby_db_preserve_states=all scope=spfile;
+NAME                        SCN TIME                                        DI GUA STORAGE_SIZE/1024/1024/1024
+-------------------- ---------- ----------------------------------- ---------- --- ---------------------------
+FB_RECOVER_TRUNC        5633353 13-JUL-17 04.45.02.000000000 PM              5 YES                    .1953125
 
+show pdbs;
+
+    CON_ID CON_NAME                       OPEN MODE  RESTRICTED
+---------- ------------------------------ ---------- ----------
+         2 PDB$SEED                       READ ONLY  NO
+         3 PDB1                           READ WRITE NO
+
+conn lyj/lyj@pdb1
+select * from cat;
+
+TABLE_NAME           TABLE_TYPE
+-------------------- -----------
+TEST                 TABLE
+TEST2                TABLE
+
+create table test_trunc as select * from all_objects;
+select count(*) from test_trunc;
+
+  COUNT(*)
+----------
+     56327
+
+drop table TEST purge;
+drop table TEST2 purge;
+
+select * from cat;
+
+TABLE_NAME           TABLE_TYPE
+-------------------- -----------
+TEST_TRUNC           TABLE
+
+# 主库做闪回数据库操作
+conn / as sysdba
 shutdown immediate
-startup
+startup mount
+flashback database to restore point fb_recover_trunc;
+alter database open resetlogs;
 
-# 在备库上
-$ sqlplus system/Center08@dgts
+alter session set container=pdb1;
+select TABLE_NAME from all_tables where OWNER='LYJ';
 
-SQL*Plus: Release 12.2.0.1.0 Production on Tue Jul 4 17:36:03 2017
+TABLE_NAME
+--------------------------------------------------------------------------------
+TEST
+TEST2
 
-Copyright (c) 1982, 2016, Oracle.  All rights reserved.
+# 备库状态
+SQL> select database_role,open_mode from v$database;
 
+DATABASE_ROLE    OPEN_MODE
+---------------- --------------------
+PHYSICAL STANDBY READ ONL      # ADG状态已停止
 
-Connected to:
-Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+# 主备库数据不同步
+alter session set container=pdb1;
+select TABLE_NAME from all_tables where OWNER='LYJ';
 
-SQL> select count(*) from cat;
+TABLE_NAME
+--------------------------------------------------------------------------------
+TEST_TRUNC
 
-  COUNT(*)
-----------
-       153
+# 在备库执行闪回数据库（用闪回点的SCN号5633353）
+conn / as sysdba
+shutdown immediate
+startup mount
+recover managed standby database cancel;  # 视情况可不执行
+flashback database to scn 5633353;
 
-SQL> set timing on
-SQL> select count(*) from cat;
-
-  COUNT(*)
-----------
-       153
-
-Elapsed: 00:00:00.03
-
-# 另开一个窗口做switchover
-$ dgmgrl sys/Center08@dgts
-DGMGRL for Linux: Release 12.2.0.1.0 - Production on Tue Jul 4 17:35:08 2017
-
-Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
-
-Welcome to DGMGRL, type "help" for information.
-Connected to "DGTS"
-Connected as SYSDBA.
+dgmgrl sys/Center08@dgtp
 DGMGRL> show configuration;
 
 Configuration - dgt_dg
@@ -437,190 +285,108 @@ Configuration - dgt_dg
   Protection Mode: MaxPerformance
   Members:
   dgtp - Primary database
-    dgts - (*) Physical standby database 
+    dgts - Physical standby database 
+      Error: ORA-16810: multiple errors or warnings detected for the member
 
-Fast-Start Failover: ENABLED
+Fast-Start Failover: DISABLED
 
 Configuration Status:
-SUCCESS   (status updated 27 seconds ago)
+ERROR   (status updated 13 seconds ago)
 
-# 回到上面的会话，在会话中执行查询
-SQL> select count(*) from cat;
+DGMGRL> enable configuration;
 
-  COUNT(*)
-----------
-       153
+DGMGRL> show configuration;
 
-Elapsed: 00:00:00.02
-SQL> select count(*) from cat;
+Configuration - dgt_dg
 
-  COUNT(*)
-----------
-       153
+  Protection Mode: MaxPerformance
+  Members:
+  dgtp - Primary database
+    dgts - Physical standby database 
 
-Elapsed: 00:00:02.80    # 有2秒延迟，但会话不中断
-SQL> select count(*) from cat;
+Fast-Start Failover: DISABLED
 
-  COUNT(*)
-----------
-       153
+Configuration Status:
+SUCCESS   (status updated 1 second ago)
 
-Elapsed: 00:00:00.07
-```
+SQL> select database_role,open_mode from v$database;
 
+DATABASE_ROLE    OPEN_MODE
+---------------- --------------------
+PHYSICAL STANDBY MOUNTED
 
-## 其他
-### DG BROKER中新增的validate命令
-``` perl
-DGMGRL> validate database verbose dgtp;
-
-  Database Role:    Primary database
-
-  Ready for Switchover:  Yes
-
-  Flashback Database Status:
-    dgtp:  On
-
-  Capacity Information:
-    Database  Instances        Threads        
-    dgtp      1                1              
-
-  Managed by Clusterware:
-    dgtp:  NO             
-    Warning: Ensure primary database s StaticConnectIdentifier property
-    is configured properly so that the primary database can be restarted
-    by DGMGRL after switchover
-
-  Temporary Tablespace File Information:
-    dgtp TEMP Files:  3
-
-  Data file Online Move in Progress:
-    dgtp:  No
-
-  Transport-Related Information:
-    Transport On:  Yes
-
-  Log Files Cleared:
-    dgtp Standby Redo Log Files:  Cleared
-
-DGMGRL> validate database verbose dgts;
-
-  Database Role:     Physical standby database
-  Primary Database:  dgtp
-
-  Ready for Switchover:  Yes
-  Ready for Failover:    Yes (Primary Running)
-
-  Flashback Database Status:
-    dgtp:  On
-    dgts:  Off
-
-  Capacity Information:
-    Database  Instances        Threads        
-    dgtp      1                1              
-    dgts      1                1              
-
-  Managed by Clusterware:
-    dgtp:  NO             
-    dgts:  NO             
-    Warning: Ensure primary database s StaticConnectIdentifier property
-    is configured properly so that the primary database can be restarted
-    by DGMGRL after switchover
-
-  Temporary Tablespace File Information:
-    dgtp TEMP Files:  3
-    dgts TEMP Files:  3
-
-  Data file Online Move in Progress:
-    dgtp:  No
-    dgts:  No
-
-  Standby Apply-Related Information:
-    Apply State:      Running
-    Apply Lag:        0 seconds (computed 1 second ago)
-    Apply Delay:      0 minutes
-
-  Transport-Related Information:
-    Transport On:      Yes
-    Gap Status:        No Gap
-    Transport Lag:     0 seconds (computed 1 second ago)
-    Transport Status:  Success
-
-  Log Files Cleared:
-    dgtp Standby Redo Log Files:  Cleared
-    dgts Online Redo Log Files:   Cleared
-    dgts Standby Redo Log Files:  Available
-
-  Current Log File Groups Configuration:
-    Thread #  Online Redo Log Groups  Standby Redo Log Groups Status       
-              (dgtp)                  (dgts)                               
-    1         3                       2                       Insufficient SRLs
-
-  Future Log File Groups Configuration:
-    Thread #  Online Redo Log Groups  Standby Redo Log Groups Status       
-              (dgts)                  (dgtp)                               
-    1         3                       2                       Insufficient SRLs
-
-  Current Configuration Log File Sizes:
-    Thread #   Smallest Online Redo      Smallest Standby Redo    
-               Log File Size             Log File Size            
-               (dgtp)                    (dgts)                   
-    1          200 MBytes                200 MBytes               
-
-  Future Configuration Log File Sizes:
-    Thread #   Smallest Online Redo      Smallest Standby Redo    
-               Log File Size             Log File Size            
-               (dgts)                    (dgtp)                   
-    1          200 MBytes                200 MBytes               
-
-  Apply-Related Property Settings:
-    Property                        dgtp Value               dgts Value
-    DelayMins                       0                        0
-    ApplyParallel                   AUTO                     AUTO
-    ApplyInstances                  0                        0
-
-  Transport-Related Property Settings:
-    Property                        dgtp Value               dgts Value
-    LogXptMode                      ASYNC                    ASYNC
-    Dependency                      <empty>                  <empty>
-    DelayMins                       0                        0
-    Binding                         optional                 optional
-    MaxFailure                      0                        0
-    MaxConnections                  1                        1
-    ReopenSecs                      300                      300
-    NetTimeout                      30                       30
-    RedoCompression                 DISABLE                  DISABLE
-    LogShipping                     ON                       ON
-
-```
-
-### 开启备库的闪回数据库
-``` perl
-SQL> select db_unique_name,open_mode,database_role,flashback_on from v$database;
-
-DB_UNIQUE_NAME                 OPEN_MODE            DATABASE_ROLE    FLASHBACK_ON
------------------------------- -------------------- ---------------- ------------------
-DGTS                           READ ONLY WITH APPLY PHYSICAL STANDBY NO
-
-
-SQL> alter database flashback on;
-alter database flashback on
-*
-ERROR at line 1:
-ORA-01153: an incompatible media recovery is active
-
-SQL> recover managed standby database cancel;
-Media recovery complete.
-
-SQL> alter database flashback on;
+SQL> alter database open;
 
 Database altered.
 
-SQL> recover managed standby database disconnect from session;
-Media recovery complete.
+SQL> select database_role,open_mode from v$database;
 
-DB_UNIQUE_NAME                 OPEN_MODE            DATABASE_ROLE    FLASHBACK_ON
------------------------------- -------------------- ---------------- ------------------
-DGTS                           READ ONLY WITH APPLY PHYSICAL STANDBY YES
+DATABASE_ROLE    OPEN_MODE
+---------------- --------------------
+PHYSICAL STANDBY READ ONLY WITH APPLY
 ```
 
+## 闪回数据库是无法闪回到datafile收缩前的状态
+``` perl
+# 将已有的数据文件收缩到190M
+alter session set container=pdb1;
+col TABLESPACE_NAME for a10
+col FILE_NAME for a50
+select TABLESPACE_NAME,FILE_NAME,BYTES/1024/1024 size_m from dba_data_files;
+
+TABLESPACE FILE_NAME                                              SIZE_M
+---------- -------------------------------------------------- ----------
+SYSTEM     /u01/app/oracle/oradata/dgt/pdb1/system01.dbf             260
+SYSAUX     /u01/app/oracle/oradata/dgt/pdb1/sysaux01.dbf             420
+UNDOTBS1   /u01/app/oracle/oradata/dgt/pdb1/undotbs01.dbf            100
+USERS      /u01/app/oracle/oradata/dgt/pdb1/users01.dbf             22.5
+
+alter tablespace USERS add datafile '/u01/app/oracle/oradata/dgt/pdb1/users02.dbf' size 200m;
+
+select sysdate from dual;
+
+SYSDATE
+-------------------
+2017-07-14 13:35:18
+
+alter database datafile '/u01/app/oracle/oradata/dgt/pdb1/users02.dbf' resize 190M;
+
+select sysdate from dual;
+
+SYSDATE
+-------------------
+2017-07-14 13:38:07
+
+# 按以下步骤是无法闪回数据库的
+recover managed standby database cancel;
+alter database close;
+flashback database to timestamp to_timestamp('2017-07-14 13:35:18','yyyy-mm-dd hh24:mi:ss');
+flashback database to timestamp to_timestamp('2017-07-14 13:35:18','yyyy-mm-dd hh24:mi:ss')
+*
+ERROR at line 1:
+ORA-38766: cannot flashback data file 13; file resized smaller
+ORA-01110: data file 13: '/u01/app/oracle/oradata/dgt/pdb1/users02.dbf'
+```
+
+## 开启12c Data Guard压缩归档
+``` perl
+edit database dgtp set property RedoCompression = 'ENABLE';
+# 关闭压缩归档
+edit database dgtp set property RedoCompression = 'DISABLE';
+```
+
+## 脚本
+``` perl
+sqlplus -s / as sysdba <<EOF
+select name, decode(cdb, 'YES', 'Multitenant Option enabled', 'Regular 12c Database: ') "Multitenant Option" , open_mode, con_id from v\$database;
+show pdbs;
+set linesize 200
+col name format a10
+col open_time format a35
+select con_id,dbid,con_uid,name,open_mode,open_time,trunc(total_size/1024/1024) size_MB from v\$pdbs;
+EOF
+
+sqlplus -s / as sysdba <<EOF
+select sess.con_id,pdbs.name,count(*)from v\$session sess,v\$pdbs pdbs where pdbs.con_id=sess.con_id group by sess.con_id,pdbs.name;
+EOF
+```

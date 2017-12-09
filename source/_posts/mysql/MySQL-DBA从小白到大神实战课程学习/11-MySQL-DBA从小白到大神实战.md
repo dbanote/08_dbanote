@@ -3,6 +3,8 @@ title: MySQL DBA从小白到大神实战-11 构建高可用MySQL系统
 date: 2017-04-06
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## MHA部署

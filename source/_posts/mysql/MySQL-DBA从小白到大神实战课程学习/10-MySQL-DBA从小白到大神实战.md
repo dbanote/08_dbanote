@@ -3,6 +3,8 @@ title: MySQL DBA从小白到大神实战-10 深入理解MySQL主从复制
 date: 2017-3-31
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 如何解决主从复制延迟的问题？

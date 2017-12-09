@@ -4,6 +4,8 @@ date: 2017-07-04
 tags:
 - oracle
 - 12c
+categories:
+- Oracle 12c特性解读-容器数据库和灾备
 ---
 
 ## 练习DG Broker switchover和failover的过程

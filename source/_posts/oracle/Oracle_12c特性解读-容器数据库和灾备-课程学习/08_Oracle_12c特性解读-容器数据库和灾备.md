@@ -4,6 +4,8 @@ date: 2017-06-23
 tags:
 - oracle
 - 12c
+categories:
+- Oracle 12c特性解读-容器数据库和灾备
 ---
 
 ## 搭建12c的Data Guard环境

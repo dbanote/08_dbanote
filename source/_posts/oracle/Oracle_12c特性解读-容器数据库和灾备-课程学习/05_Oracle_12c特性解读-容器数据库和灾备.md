@@ -4,6 +4,8 @@ date: 2017-06-02
 tags:
 - oracle
 - 12c
+categories:
+- Oracle 12c特性解读-容器数据库和灾备
 ---
 
 ## 本地克隆创建PDB

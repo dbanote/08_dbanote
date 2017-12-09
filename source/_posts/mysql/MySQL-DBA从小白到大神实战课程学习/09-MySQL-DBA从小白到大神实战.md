@@ -3,6 +3,8 @@ title: MySQL DBA从小白到大神实战-09 MySQL性能优化的关键点
 date: 2017-03-22
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 服务器参数调优，有哪些关键点？

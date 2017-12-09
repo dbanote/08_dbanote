@@ -3,6 +3,8 @@ title: MySQL-DBA从小白到大神实战-15 MySQL源码初探
 date: 2017-05-02
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 通过gdb工具分析mysqld进程启动的过程

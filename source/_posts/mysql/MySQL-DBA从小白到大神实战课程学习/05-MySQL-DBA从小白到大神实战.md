@@ -3,6 +3,8 @@ title: MySQL DBA从小白到大神实战-05 MySQL DBA日常操作
 date: 2017-02-24
 tags:
 - mysql
+categories:
+- MySQL DBA从小白到大神实战
 ---
 
 ## 使用mysqld_mutil start命令启动多实例3306、3307，使用mysqld_multi report命令显示结果。

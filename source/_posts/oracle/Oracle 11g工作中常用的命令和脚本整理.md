@@ -1,9 +1,10 @@
 ---
 title: Oracle Database 11g工作中常用的命令和脚本整理
 categories:
-- script
+- 常用命令与脚本
 tags:
 - oracle
+- scripts
 ---
 
 ## 设置Oracle用户密码永不过期
@@ -108,6 +109,8 @@ select s.SID,s.SERIAL#,lo.PROCESS,lo.LOCKED_MODE,do.OWNER,do.OBJECT_NAME,do.OBJE
 
 alter system kill session '&sid,&serial';
 
+select sid,type,lmode,request,ctime from v$lock
+  where type in ('TM','TX') order by 1,2;
 ```
 
 ## 生成删除所有普通用户及其数据脚本
