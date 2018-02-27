@@ -172,6 +172,15 @@ sudo dpkg --get-selections | more
 
 # 查询当前系统被锁定不更新的软件包状态(hold)，命令为
 sudo dpkg --get-selections | grep hold
+
+# 取消不更新
+sudo echo "docker-ce install" | sudo dpkg --set-selections
+
+# 查看
+sudo dpkg --get-selections | grep docker
+#----------------------------------------------------------------------
+docker-ce                                       install
+#----------------------------------------------------------------------
 ```
 
 ## 卸载Docker CE

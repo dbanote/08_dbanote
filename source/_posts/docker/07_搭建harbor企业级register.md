@@ -1,5 +1,5 @@
 ---
-title: Docker学习笔记_06 搭建harbor企业级私有registry
+title: Docker学习笔记_07 搭建harbor企业级私有registry
 date: 2018-01-30
 tags:
 - docker
@@ -66,7 +66,7 @@ mkdir /root/data
 cd /root/data
 
 # 创建自已的CA证书
-openssl req -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 365 -out ca.crt
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 3650 -out ca.crt
 #------------------------------------------------------------
 Country Name (2 letter code) [AU]:CN
 State or Province Name (full name) [Some-State]:Harbin
@@ -115,7 +115,8 @@ drwxr-xr-x 2 root root 4096 Jan 31 01:39 demoCA/
 
 # 签名证书
 echo subjectAltName = IP:10.240.4.159 > extfile.cnf
-openssl ca -in 10.240.4.159.csr -out 10.240.4.159.crt -cert ca.crt -keyfile ca.key -extfile extfile.cnf -outdir .
+openssl ca -in 10.240.4.159.csr -out 10.240.4.159.crt -cert ca.crt -keyfile ca.key -extfile extfile.cnf -days 3650 -outdir .
+
 #------------------------------------------------------------
 Using configuration from /usr/lib/ssl/openssl.cnf
 Check that the request matches the signature

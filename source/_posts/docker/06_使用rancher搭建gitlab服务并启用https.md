@@ -1,15 +1,16 @@
 ---
-title: Docker学习笔记_05 使用rancher搭建gitlab服务并启用https
-date: 2018-01-18
+title: Docker学习笔记_06 使用rancher搭建gitlab服务并启用https
+date: 2018-01-22
 tags:
 - docker
 - rancher
+- gitlab
 categories:
 - Docker学习笔记
 ---
 
 ## 添加一个服务
-添加应用
+添加应用(使用rancher默认的编排工具Cattle，docker-ce升级到最新版本)
 ![](http://p2c0rtsgc.bkt.clouddn.com/0205_rancher_01.png)
 ![](http://p2c0rtsgc.bkt.clouddn.com/0205_rancher_02.png)
 
@@ -29,7 +30,6 @@ categories:
 
 设置健康检查
 ![](http://p2c0rtsgc.bkt.clouddn.com/0207_rancher_05.png)
-
 
 调度安装到指定的主机上，并创建
 ![](http://p2c0rtsgc.bkt.clouddn.com/0205_rancher_08.png)
@@ -146,10 +146,10 @@ systemctl daemon-reload
 systemctl restart docker
 
 # 将证书放到指定的路径
-mkdir /data/gitlab/conf-files/ssh
-chmod 700 /data/gitlab/conf-files/ssh
-cp /root/data/10.240.4.160.crt /data/gitlab/conf-files/ssh/
-cp /root/data/10.240.4.160.key /data/gitlab/conf-files/ssh/
+mkdir /data/gitlab/conf-files/ssl
+chmod 700 /data/gitlab/conf-files/ssl
+cp /root/data/10.240.4.160.crt /data/gitlab/conf-files/ssl/
+cp /root/data/10.240.4.160.key /data/gitlab/conf-files/ssl/
 
 
 ```
@@ -177,26 +177,3 @@ https://10.240.4.160
 ![](http://p2c0rtsgc.bkt.clouddn.com/0207_rancher_03.png)
 登陆后界面
 ![](http://p2c0rtsgc.bkt.clouddn.com/0207_rancher_04.png)
-
-
-## 设置rancher访问控制
-### 启用本地验证
-安装完rancher之后，正式使用前一定要配置管理员权限
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_01.png)
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_02.png)
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_03.png)
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_05.png)
-
-设置后，以后登陆Rancher server就需要输入用户名和密码了
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_04.png)
-
-### 创建普通帐户
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_06.png)
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_07.png)
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_08.png)
-![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_09.png)
-
-### 设置环境访问控制
-![](http://p2c0rtsgc.bkt.clouddn.com/0207_rancher_06.png)
-角色说明[官方文档](http://rancher.com/docs/rancher/v1.6/zh/environments/#成员角色)中有详细说明
-![](http://p2c0rtsgc.bkt.clouddn.com/0207_rancher_07.png)

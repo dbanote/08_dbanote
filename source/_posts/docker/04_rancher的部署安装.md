@@ -204,6 +204,8 @@ k8s基础设施（点击+可查看详细内容）
 ![](http://p2c0rtsgc.bkt.clouddn.com/0117_rancher_18.png)
 
 
+> 因k8s管理复杂，本文只是演示如何配置k8s，后续文章的环境将继续使用rancher默认的Cattle，并且将docker升级到最新版本
+
 ## 参考文档
 * [使用RancherServer:v1.6.12部署K8S-v1.8.3](http://blog.csdn.net/csdn_duomaomao/article/details/78746034)
 * [原生加速中国区Kubernetes安装](https://www.cnrancher.com/kubernetes-installation/)
