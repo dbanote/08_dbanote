@@ -64,16 +64,38 @@ Rancher pipeline的安装非常简单，在应用商店搜索pipeline
 
 ## GO DEMO
 ### 添加流水线
+![](http://p2c0rtsgc.bkt.clouddn.com/0228_rancher_01.png)
+
+![](http://p2c0rtsgc.bkt.clouddn.com/0228_rancher_02.png)
+
+![](http://p2c0rtsgc.bkt.clouddn.com/0228_rancher_03.png)
+
+添加一个阶段
+![](http://p2c0rtsgc.bkt.clouddn.com/0228_rancher_04.png)
 
 
 
+
+mkdir -p /go/src/10.240.4.160/example
+ln -s $(pwd) /go/src/10.240.4.160/example/go
+cd /go/src/10.240.4.160/example/go/outyet
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bin/outyet
+
+docker pull 10.240.4.159/example/outyet:demo
+/data/tomcat/webapps:/usr/local/tomcat/webapps
 
 https://github.com/golang/example
+
+
+创建容器的时候指定启动参数，自动挂载localtime文件到容器内
+https://github.com/lawrli
+
+
 ## 
 ```perl
+/etc/localtime:/etc/localtime:ro
 
 ```
-
 
 ## 参考文档：
 * [Rancher之Pipeline JAVA demo](https://www.cnblogs.com/xzkzzz/p/8125389.html)
@@ -139,5 +161,17 @@ docker tag SOURCE_IMAGE[:TAG] 10.240.4.159/app/IMAGE[:TAG]
 docker-compose -f ./dns.yaml up -d
 ```
 
+
+容器-Docker为什么火？
+Google自2004年就开始使用容器技术，目前他们每周要启动超过20亿个容器，每秒种新启动的容器就超过3000个，在容器技术方面有大量的积累。
+曾相继开源了Cgroup(Control Groups)和Imctfy(Google开源Linux容器)这两个重量级项目。Google对Docker的支持力度非常大，不仅把imctfy先进之处融入Docker之中，还把自已的容器管理系统(kubernetes)也开源出来。
+
+技术的发展产生了大量优秀的系统和软件。
+操作系统：Redhat/Centos、Debian/Ubuntu、FreeBSD、SUSE等
+编程语言：Java、Python、Ruby、Golang、C/C++等
+WEB服务器：Apache、Nginx、Lighttpd等
+数据库：Mysql、Redis、Mongodb等
+
+软件开发人员在这么多种类中自由选择，结果就是维护一个非常庞大的开发、测试和生产环境，开发、测试和运维人员就会被种类繁多的环境折腾的筋疲力尽。即使只选择其中一两种，随着操作系统和软件版本的更新迭代，维护工作还是变得越来越庞大。
 
 

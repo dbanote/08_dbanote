@@ -44,7 +44,7 @@ mkdir /root/data
 cd /root/data
 
 # 创建自已的CA证书
-openssl req -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 365 -out ca.crt
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 3650 -out ca.crt
 #------------------------------------------------------------
 Country Name (2 letter code) [AU]:CN
 State or Province Name (full name) [Some-State]:Harbin
@@ -93,7 +93,7 @@ drwxr-xr-x 2 root root 4096 Feb  5 17:03 demoCA/
 
 # 签名证书
 echo subjectAltName = IP:10.240.4.160 > extfile.cnf
-openssl ca -in 10.240.4.160.csr -out 10.240.4.160.crt -cert ca.crt -keyfile ca.key -extfile extfile.cnf -outdir .
+openssl ca -in 10.240.4.160.csr -out 10.240.4.160.crt -cert ca.crt -keyfile ca.key -extfile extfile.cnf -days 3650 -outdir .
 #------------------------------------------------------------
 Using configuration from /usr/lib/ssl/openssl.cnf
 Check that the request matches the signature
@@ -150,8 +150,6 @@ mkdir /data/gitlab/conf-files/ssl
 chmod 700 /data/gitlab/conf-files/ssl
 cp /root/data/10.240.4.160.crt /data/gitlab/conf-files/ssl/
 cp /root/data/10.240.4.160.key /data/gitlab/conf-files/ssl/
-
-
 ```
 
 ## 升级服务

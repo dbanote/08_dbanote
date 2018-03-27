@@ -9,8 +9,7 @@ tags:
 github已在用，后公司搭建私有gitlab仓库，现要在一台电脑上同时使用GitHub和GitLab仓库
 ![](http://p2c0rtsgc.bkt.clouddn.com/0227_gitlab_01.png)
 
-
-
+<!-- more -->
 进入git bash生成gitlab钥匙
 ```
 $ cd ~/.ssh
@@ -44,6 +43,8 @@ total 17
 -rw-r--r-- 1 liuyajun 197121  401 一月 22  2017 id_rsa.pub
 -rw-r--r-- 1 liuyajun 197121 2351 二月 27 11:34 known_hosts
 
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/gitlab_id_rsa
 ```
 
 用gitlab_id_rsa.pub里的内容配置gitlab帐号SSH KEY
@@ -53,19 +54,20 @@ cat ~/.ssh/gitlab_id_rsa.pub
 
 ![](http://p2c0rtsgc.bkt.clouddn.com/0227_gitlab_02.png)
 
+配置config
+```
+cat ~/.ssh/config
+# GitLab.com server
+Host gitlab.com
+IdentityFile ~/.ssh/id_rsa
 
-
-
-
-
-
-
-#gitlab
+# Private GitLab server
 Host 10.240.4.160
-        HostName 10.240.4.160
-        IdentityFile ~/.ssh/gitlab_id_rsa
+IdentityFile ~/.ssh/gitlab_id_rsa
+```
 
-#github
-Host github.com
-        HostName github.com
-        IdentityFile ~/.ssh/id_rsa
+测试
+```
+ssh -T git@github.com
+ssh -T git@10.240.4.160
+```
