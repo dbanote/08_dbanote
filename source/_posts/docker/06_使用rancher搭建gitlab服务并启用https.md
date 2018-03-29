@@ -13,7 +13,7 @@ categories:
 添加应用(使用rancher默认的编排工具Cattle，docker-ce升级到最新版本)
 ![](http://p2c0rtsgc.bkt.clouddn.com/0205_rancher_01.png)
 ![](http://p2c0rtsgc.bkt.clouddn.com/0205_rancher_02.png)
-
+<!-- more -->
 为应用添加服务
 ![](http://p2c0rtsgc.bkt.clouddn.com/0205_rancher_03.png)
 设置名称、镜像，添加端口映射：80、22、443

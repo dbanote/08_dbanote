@@ -266,13 +266,18 @@ Typ=96 Len=6: 41,41,41,41,41,41
 
 ## Oracle ROWID格式解析
 ![](http://p2c0rtsgc.bkt.clouddn.com/0327_oracle_dsi_08.png)
-
-
-
 ``` perl
+SQL> select ROWID,ID,NAME,DBMS_ROWID.ROWID_RELATIVE_FNO(ROWID) FILE#,DBMS_ROWID.ROWID_BLOCK_NUMBER(ROWID) BLOCK# from t1;
 
+ROWID                      ID NAME            FILE#     BLOCK#
+------------------ ---------- ---------- ---------- ----------
+AAAW0oAAGAAAACDAAA          1 AAAAAA              6        131
+AAAW0oAAGAAAACDAAB          2 BBBBB               6        131
 ```
 
 
+## 实例
+### insert一条记录，没有提交事务，会写入Datablock吗？
 
+## 参考
 [Oracle数据块损坏知识](https://wenku.baidu.com/view/0624178076eeaeaad0f33028.html)
