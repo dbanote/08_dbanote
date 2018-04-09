@@ -13,6 +13,7 @@ categories:
 ### 启用本地验证
 安装完rancher之后，正式使用前一定要配置管理员权限
 ![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_01.png)
+<!-- more -->
 ![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_02.png)
 ![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_03.png)
 ![](http://p2c0rtsgc.bkt.clouddn.com/0118_rancher_05.png)

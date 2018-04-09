@@ -202,7 +202,7 @@ current = 0x8f60, required = 0x8f60
 
 ### BBED修复文件头
 需要修改的项如下：
-![](http://p2c0rtsgc.bkt.clouddn.com/0408_oracle_dsi_01.png.png)
+![](http://p2c0rtsgc.bkt.clouddn.com/0408_oracle_dsi_01.png)
 
 #### BBED修改文件头block的rdba地址
 ``` perl
@@ -513,7 +513,9 @@ from v$datafile order by 1;
          3 2018-04-04 22:37:57         972599877
          4 2018-04-04 22:38:08         972599888
 
-# 说明：ORACLE 数据库是从1988/01/01 00:00:00 开始记录SCN,也就是说我们的数据库的使用最早时间只能是从1988 年元旦凌晨开始，那么也就是说数据库记录的创建时间可以采用这个时间点为起点,然后每增加一秒,数据库的kcvfhcrt 就增加1,但是ORACLE 为了计算简便,每个月按照31 天计算
+# 说明：ORACLE 数据库是从1988/01/01 00:00:00 开始记录SCN,也就是说我们的数据库的使用最早时间只能是从1988 年元旦凌晨开始，
+# 那么也就是说数据库记录的创建时间可以采用这个时间点为起点,然后每增加一秒,数据库的kcvfhcrt 就增加1，
+# ORACLE 为了计算简便,每个月按照31 天计算
 
 select to_char(972599860,'xxxxxxxx') from dual;
 
@@ -664,7 +666,6 @@ BBED> dump
  53595341 55580000 00000000 00000000 00000000 00000000 00000000 00000200 
 
  <32 bytes per line>
-
 
 # SYSAUX转换成16进制
 SQL> select dump('SYSAUX',16) from dual;
@@ -906,6 +907,17 @@ Highest block SCN            : 361334 (0.361334)
 SQL> alter database open;
 
 Database altered.
+
+# 如果打开库报错，可检查修改checkpoint count，或者重建控制文件
+kcvfhcpc (offset 140) - Datafile checkpoint count      # 数据文件检查点的计数器
+kcffhccc (offset 148) - Controlfile checkpoint count   # 控制文件检查点的计数器
+
+# 一般kcvfhcpc比kcvfhccc大1
+BBED> p kcvfhcpc
+ub4 kcvfhcpc                                @140      0x00000024
+
+BBED> p kcvfhccc
+ub4 kcvfhccc                                @148      0x00000023
 ```
 
 ## 参考
