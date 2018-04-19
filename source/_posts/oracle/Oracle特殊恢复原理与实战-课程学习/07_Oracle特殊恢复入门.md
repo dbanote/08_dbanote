@@ -605,10 +605,11 @@ CHANGE #4 TYP:0 CLS:20 AFN:3 DBA:0x00c0011a OBJ:4294967295 SCN:0x0000.00420e51 S
 ``` perl
 vi $ORACLE_HOME/rdbms/admin/show_para.sql
 #-----------------------------------------------------------------------------------
-col p_name for a40
-col p_DESCRIPTION for a50
-col p_value for a30
-set linesize 10000
+col p_name for a48
+col p_DESCRIPTION for a62
+col p_value for a10
+set linesize 150
+set pagesize 9999
 SELECT  i.ksppinm p_name,
     i.ksppdesc p_description,
     CV.ksppstvl p_VALUE,
