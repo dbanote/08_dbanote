@@ -73,10 +73,10 @@ echo "set long 5000" >> $ORACLE_HOME/sqlplus/admin/glogin.sql
 select distinct at.TABLE_NAME, at.OWNER, at.NUM_ROWS
 from 
   (SELECT owner,table_name FROM all_tables WHERE owner in 
-   (select username from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE'))
+   (select username from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE','DBSNMP','SYSMAN'))
 MINUS
   SELECT owner,table_name FROM all_constraints WHERE owner in 
-   (select username from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE')) 
+   (select username from dba_users where account_status='OPEN' and username not in ('SYSTEM','SYS','GOLDENGATE','DBSNMP','SYSMAN')) 
   AND constraint_type = 'P' ) vn, all_tables at
 where vn.TABLE_NAME=at.TABLE_NAME and vn.OWNER=at.OWNER and at.TABLE_NAME not like '%$%' order by 2,1;
 ```
