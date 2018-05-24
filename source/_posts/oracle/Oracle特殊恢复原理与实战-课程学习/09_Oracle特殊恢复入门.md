@@ -668,3 +668,5 @@ KTU      KTUXC    UNDO TRANSACTION CONTROL                104
 ```
 
 链接：[RDBA/UBA转换文件号和块号的函数getbfno](/2018/03/28/oracle/Oracle%E7%89%B9%E6%AE%8A%E6%81%A2%E5%A4%8D%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E6%88%98-%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/06_Oracle%E7%89%B9%E6%AE%8A%E6%81%A2%E5%A4%8D%E5%85%A5%E9%97%A8/#RDBA转换函数)
+
+参考：[探索undo一致性读](https://blog.csdn.net/gumengkai/article/details/53186456)
